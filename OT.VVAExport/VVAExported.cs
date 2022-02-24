@@ -12,8 +12,9 @@ namespace OpenXmlSample
     using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
     using P15 = DocumentFormat.OpenXml.Office2013.PowerPoint;
     using VT = DocumentFormat.OpenXml.VariantTypes;
-    
-    
+    using P = DocumentFormat.OpenXml.Presentation;
+
+
     public class PresentationDocumentBuilderClass
     {
         
