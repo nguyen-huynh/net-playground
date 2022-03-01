@@ -20,6 +20,9 @@
     /// </summary>
     public partial class PresentationBuilder
     {
+        const int SLIDE_WIDTH = 7772400;
+        const int SLIDE_HEIGHT = 4572000;
+
         private PresentationDocument _presentationDocument = null;
         private PresentationPart _presentationPart = null;
 
@@ -107,7 +110,7 @@
             var themePart = CreateTheme(slideMasterPart);
             presentationPart.AddPart(themePart, this.LastRelationshipIdOf<Theme>());
 
-            SlideSize slideSize = new SlideSize() { Cx = 7772400, Cy = 4572000 };
+            SlideSize slideSize = new SlideSize() { Cx = SLIDE_WIDTH, Cy = 4572000 };
             NotesSize notesSize = new NotesSize() { Cx = 6858000, Cy = 9144000 };
             DefaultTextStyle defaultTextStyle = new DefaultTextStyle();
 

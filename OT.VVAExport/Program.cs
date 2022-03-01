@@ -10,29 +10,31 @@
         {
             //var slides = JsonConvert.DeserializeObject<IEnumerable<VVASlide>>(System.IO.File.ReadAllText("./data.json"));
 
-            //var exportTool = new ExportCSharp();
-            //exportTool.Excute();
+            Console.WriteLine("1. Generate CSharp file , 2. Export VVA");
+            var toolChoice = Console.ReadLine();
 
-            ////CreatePresentation($@"./Outputs/VVAExported_{DateTime.Now.ToString("HHmmss")}.pptx");
-            //var filePath = System.IO.Path.GetFullPath($@"./Outputs/VVAExported{DateTime.Now.ToString("HHmmss")}.pptx");
-            //PresentationBuilder presentationBuilder = new PresentationBuilder();
-            //presentationBuilder.Create(filePath);
-
-
-            //// Export VVA Slides
-            if (!Directory.Exists(Path.Combine(@"C:\Users\hnnguyen\Desktop\Outputs")))
-                _ = Directory.CreateDirectory(Path.Combine(@"C:\Users\hnnguyen\Desktop\Outputs"));
-
-            var filePath = Path.Combine(@"C:\Users\hnnguyen\Desktop", $@"Outputs/VVAExported{DateTime.Now.ToString("HHmmss")}.pptx");
-            var builder = new PresentationBuilder();
-            builder.Create(filePath);
-
-            using (var process = new System.Diagnostics.Process())
+            if(toolChoice == "1")
             {
-                process.StartInfo.UseShellExecute = true;
-                process.StartInfo.FileName = filePath;
+                var exportTool = new ExportCSharp();
+                exportTool.Excute();
+            }
+            else if (toolChoice == "2")
+            {
+                //// Export VVA Slides
+                if (!Directory.Exists(Path.Combine(@"C:\Users\hnnguyen\Desktop\Outputs")))
+                    _ = Directory.CreateDirectory(Path.Combine(@"C:\Users\hnnguyen\Desktop\Outputs"));
 
-                process.Start();
+                var filePath = Path.Combine(@"C:\Users\hnnguyen\Desktop", $@"Outputs/VVAExported{DateTime.Now.ToString("HHmmss")}.pptx");
+                var builder = new PresentationBuilder();
+                builder.Create(filePath);
+
+                using (var process = new System.Diagnostics.Process())
+                {
+                    process.StartInfo.UseShellExecute = true;
+                    process.StartInfo.FileName = filePath;
+
+                    process.Start();
+                }
             }
         }
     }
