@@ -50,7 +50,7 @@
         private void CreatePresentationParts(PresentationPart presentationPart)
         {
             SlideMasterIdList slideMasterIdList1 = new SlideMasterIdList(new SlideMasterId() { Id = (UInt32Value)2147483648U, RelationshipId = "rId1" });
-            SlideIdList slideIdList1 = new SlideIdList(new SlideId() { Id = (UInt32Value)256U, RelationshipId = "rId2" });
+            SlideIdList slideIdList1 = new SlideIdList(new SlideId() { Id = (UInt32Value)256U, RelationshipId = "rId2" }, new SlideId() { Id = (UInt32Value)256U, RelationshipId = "rId20" });
             SlideSize slideSize1 = new SlideSize() { Cx = 7772400, Cy = 4572000, Type = SlideSizeValues.Custom };
             NotesSize notesSize1 = new NotesSize() { Cx = 6858000, Cy = 9144000 };
             DefaultTextStyle defaultTextStyle1 = new DefaultTextStyle();
@@ -62,7 +62,8 @@
             SlideMasterPart slideMasterPart1;
             ThemePart themePart1;
 
-            slidePart1 = CreateSlidePart(presentationPart);
+            slidePart1 = CreateSlidePart(presentationPart, "rId2");
+            CreateSlidePart(presentationPart, "rId20");
             slideLayoutPart1 = CreateSlideLayoutPart(slidePart1);
             slideMasterPart1 = CreateSlideMasterPart(slideLayoutPart1);
             themePart1 = CreateTheme(slideMasterPart1);
@@ -72,9 +73,9 @@
             presentationPart.AddPart(themePart1, "rId5");
         }
 
-        private static SlidePart CreateSlidePart(PresentationPart presentationPart)
+        private static SlidePart CreateSlidePart(PresentationPart presentationPart,string id)
         {
-            SlidePart slidePart1 = presentationPart.AddNewPart<SlidePart>("rId2");
+            SlidePart slidePart1 = presentationPart.AddNewPart<SlidePart>(id);
             Slide slide = new Slide();
 
             slide.AddNamespaceDeclaration("a", "http://schemas.openxmlformats.org/drawingml/2006/main");
