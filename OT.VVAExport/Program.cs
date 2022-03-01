@@ -1,17 +1,10 @@
-﻿using DocumentFormat.OpenXml.Drawing;
-
-namespace OT.VVAExport
+﻿namespace OT.VVAExport
 {
-  using OpenXmlSample;
-  using OT.VVAExport.VVAPresentation;
+    using OT.VVAExport.VVAPresentation;
     using System;
 
     internal class Program
     {
-        private static RgbColorModelHex _darkColor = new RgbColorModelHex() { Val = "2A2835" };
-        private static RgbColorModelHex _orangeColor = new RgbColorModelHex() { Val = "ED7D31" };
-        private static RgbColorModelHex _whiteColor = new RgbColorModelHex() { Val = "FFFFFF" };
-
         private static void Main(string[] args)
         {
             //var slides = JsonConvert.DeserializeObject<IEnumerable<VVASlide>>(System.IO.File.ReadAllText("./data.json"));
@@ -23,15 +16,15 @@ namespace OT.VVAExport
             var filePath = System.IO.Path.GetFullPath($@"./Outputs/VVAExported{DateTime.Now.ToString("HHmmss")}.pptx");
             //PresentationBuilder presentationBuilder = new PresentationBuilder();
             //presentationBuilder.Create(filePath);
-            var builder = new PresentationDocumentBuilderClass();
-            builder.CreatePackage(filePath);
+            var builder = new PresentationBuilder();
+            builder.Create(filePath);
 
             using (var process = new System.Diagnostics.Process())
             {
-               process.StartInfo.UseShellExecute = true;
-               process.StartInfo.FileName = filePath;
+                process.StartInfo.UseShellExecute = true;
+                process.StartInfo.FileName = filePath;
 
-               process.Start();
+                process.Start();
             }
         }
     }
