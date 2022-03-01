@@ -7,10 +7,10 @@ namespace OT.VVAExport.VVAPresentation
 {
     public class ExportCSharp
     {
-        public void Excute(string sourcePath = @"./VVAVideo1.pptx", string targetPath = @"./VVAVideo1.cs")
+        public void Excute(string sourcePath = @"./VVASample.pptx")
         {
             var sourceFile = new FileInfo(sourcePath);
-            var targetFile = new FileInfo(targetPath);
+            var targetFile = new FileInfo(Path.GetFileNameWithoutExtension(sourcePath) + ".cs");
 
             using (var source = sourceFile.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
             {

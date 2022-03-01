@@ -30,5 +30,10 @@
     <Content Include="Outputs\**\*.*" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="1.cs" />
+    <Compile Remove="VVASample.cs" />
+  </ItemGroup>
+
 
 </Project>
