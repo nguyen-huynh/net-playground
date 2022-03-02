@@ -33,6 +33,9 @@
                 var builder = new PresentationBuilder();
                 builder.Create(filePath);
 
+                //var builder = new OpenXmlSample.PresentationDocumentBuilderClass();
+                //builder.CreatePackage(filePath);
+
                 using (var process = new System.Diagnostics.Process())
                 {
                     process.StartInfo.UseShellExecute = true;

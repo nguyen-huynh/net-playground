@@ -28,7 +28,6 @@
                 new EffectList()));
         }
 
-
         private void GenerateOpeningSlidePart(ref SlidePart openingSlidePart, ImagePart otflogoImagePart)
         {
             Slide slide = new Slide();
@@ -116,13 +115,20 @@
             blockDurationShape.AppendDefaultTextBody(text: "00:00", textAlignment: TextAlignmentTypeValues.Right);
             groupShape.Append(blockDurationShape);
 
-
             var otfLogoPicture = new Picture();
-            otfLogoPicture.AppendNonVisualPictureProperties(id: this.NewId, name: "OTFLogo");
+            otfLogoPicture.AppendNonVisualPictureProperties(id: this.NewId, name: "OTFLogo", uri: $@"{{{Guid.NewGuid()}}}");
             otfLogoPicture.AppendBlipFill(imageRId: openingSlidePart.GetIdOfPart(otflogoImagePart), isStrechShape: true);
             otfLogoPicture.AppendShapeProperties(posX: (SLIDE_WIDTH - 228745) / 2, posY: 50259, width: 228745, height: 285750);
             //otfLogoPicture.AppendDefaultShapeStyle();
             groupShape.Append(otfLogoPicture);
+
+            var openingShape = new Shape();
+            openingShape.AppendDefaultNonVisualShapeProperties(id: this.NewId, name: "OpeningText");
+            openingShape.AppendDefaultShapeProperties(posX: 2080706, posY: 1808947, width: 3610989, height: 954107);
+            openingShape.AppendDefaultShapeStyle();
+            openingShape.AppendOpeningTextBox();
+            //openingShape.TextBody = ShapeBuilder.GenerateOpeningText();
+            shapeTree.Append(openingShape);
 
             shapeTree.Append(groupShape);
         }

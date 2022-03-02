@@ -109,11 +109,11 @@
             slideMasterPart.AddPart(openingSlideLayoutPart, slideMasterId);
             presentationPart.AddPart(slideMasterPart, slideMasterId);
 
-            //// Slide 2
-            //var vvaSlide = presentationPart.AddNewPart<SlidePart>(this.GenerateRelationshipId<SlideId>());
-            //this.GenerateVVASlidePart(ref vvaSlide);
+            // Slide 2
+            var vvaSlide = presentationPart.AddNewPart<SlidePart>(this.GenerateRelationshipId<SlideId>());
+            this.GenerateVVASlidePart(ref vvaSlide);
 
-            //vvaSlide.AddPart<SlideLayoutPart>(openingSlideLayoutPart, slideMasterId);
+            vvaSlide.AddPart<SlideLayoutPart>(openingSlideLayoutPart, slideMasterId);
 
             var themePart = CreateTheme(slideMasterPart);
             presentationPart.AddPart(themePart, this.LastRelationshipIdOf<Theme>());

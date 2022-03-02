@@ -2,6 +2,8 @@
 {
     using DocumentFormat.OpenXml;
     using DocumentFormat.OpenXml.Drawing;
+    using DocumentFormat.OpenXml.Office2016.Drawing;
+    using DocumentFormat.OpenXml.Packaging;
     using DocumentFormat.OpenXml.Presentation;
     using System;
     using BlipFill = DocumentFormat.OpenXml.Presentation.BlipFill;
@@ -17,24 +19,49 @@
         public static NonVisualPictureProperties AppendNonVisualPictureProperties<T>(
             this T element,
             UInt32Value id = null,
-            string name = null) where T : Picture
+            string name = null,
+            string uri = null) where T : Picture
         {
             if (element == null)
                 throw new ArgumentNullException(nameof(element));
-            
-            element.NonVisualPictureProperties = new NonVisualPictureProperties();
-            element.NonVisualPictureProperties.Append(new NonVisualDrawingProperties
-            {
-                Name = name,
-                Id = id
-            });
-            var nonVisualPictureDrawingProperties = new DocumentFormat.OpenXml.Presentation.NonVisualPictureDrawingProperties();
-            nonVisualPictureDrawingProperties.Append(new DocumentFormat.OpenXml.Drawing.PictureLocks()
-            {
-                NoChangeAspect = false
-            });
-            element.NonVisualPictureProperties.Append(nonVisualPictureDrawingProperties);
-            element.NonVisualPictureProperties.Append(new DocumentFormat.OpenXml.Presentation.ApplicationNonVisualDrawingProperties());
+
+            NonVisualPictureProperties nonVisualPictureProperties = element.NonVisualPictureProperties = new NonVisualPictureProperties();
+
+            var nonVisualDrawingProperties = new NonVisualDrawingProperties();
+            nonVisualDrawingProperties.Id = id;
+            nonVisualDrawingProperties.Name = name;
+
+            var aNonVisualDrawingPropertiesExtensionList = new NonVisualDrawingPropertiesExtensionList();
+
+            var aNonVisualDrawingPropertiesExtension = new NonVisualDrawingPropertiesExtension();
+            aNonVisualDrawingPropertiesExtension.Uri = uri;
+
+            var a16CreationId = new CreationId();
+
+            a16CreationId.AddNamespaceDeclaration("a16", "http://schemas.microsoft.com/office/drawing/2014/main");
+
+            a16CreationId.Id = $@"{{{Guid.NewGuid()}}}";
+
+            aNonVisualDrawingPropertiesExtension.Append(a16CreationId);
+
+            aNonVisualDrawingPropertiesExtensionList.Append(aNonVisualDrawingPropertiesExtension);
+
+            nonVisualDrawingProperties.Append(aNonVisualDrawingPropertiesExtensionList);
+
+            nonVisualPictureProperties.Append(nonVisualDrawingProperties);
+
+            NonVisualPictureDrawingProperties nonVisualPictureDrawingProperties = new NonVisualPictureDrawingProperties();
+
+            PictureLocks aPictureLocks = new PictureLocks();
+            aPictureLocks.NoChangeAspect = true;
+
+            nonVisualPictureDrawingProperties.Append(aPictureLocks);
+
+            nonVisualPictureProperties.Append(nonVisualPictureDrawingProperties);
+
+            var applicationNonVisualDrawingProperties = new ApplicationNonVisualDrawingProperties();
+
+            nonVisualPictureProperties.Append(applicationNonVisualDrawingProperties);
 
             return element.NonVisualPictureProperties;
         }
@@ -49,42 +76,20 @@
             if (string.IsNullOrEmpty(imageRId))
                 throw new ArgumentNullException(nameof(imageRId));
 
-            //var result = new BlipFill(new Blip() { Embed = imageRId });
-            //if (isStrechShape)
-            //{
-            //    result.Append(new Stretch(new FillRectangle()));
-            //}
-            //else
-            //{
-            //    // TODO: Add another strech choice
-            //}
-            //element.Append(result);
-            //return result;
+            BlipFill blipFill = (element as Picture).BlipFill = new BlipFill();
 
-            var blipFill = new DocumentFormat.OpenXml.Presentation.BlipFill();
-            var blip1 = new DocumentFormat.OpenXml.Drawing.Blip()
-            {
-                Embed = imageRId,
-                CompressionState = BlipCompressionValues.HighQualityPrint
-            };
-            var blipExtensionList1 = new DocumentFormat.OpenXml.Drawing.BlipExtensionList();
-            var blipExtension1 = new DocumentFormat.OpenXml.Drawing.BlipExtension()
-            {
-                Uri = "{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}"
-            };
-            var useLocalDpi1 = new DocumentFormat.OpenXml.Office2010.Drawing.UseLocalDpi()
-            {
-                Val = false
-            };
-            useLocalDpi1.AddNamespaceDeclaration("a14", "http://schemas.microsoft.com/office/drawing/2010/main");
-            blipExtension1.Append(useLocalDpi1);
-            blipExtensionList1.Append(blipExtension1);
-            blip1.Append(blipExtensionList1);
-            var stretch = new DocumentFormat.OpenXml.Drawing.Stretch();
-            stretch.Append(new DocumentFormat.OpenXml.Drawing.FillRectangle());
-            blipFill.Append(blip1);
-            blipFill.Append(stretch);
-            element.Append(blipFill);
+            var aBlip = new Blip();
+            aBlip.Embed = imageRId;
+
+            blipFill.Append(aBlip);
+
+            Stretch aStretch = new Stretch();
+
+            FillRectangle aFillRectangle = new FillRectangle();
+
+            aStretch.Append(aFillRectangle);
+
+            blipFill.Append(aStretch);
             return blipFill;
         }
 
@@ -113,15 +118,44 @@
             if (element == null)
                 throw new ArgumentNullException(nameof(element));
 
-            var result = new ShapeProperties(
-                new Transform2D(
-                    new Offset() { X = posX, Y = posY },
-                    new Extents() { Cx = width, Cy = height },
-                    new PresetGeometry(new AdjustValueList()) { Preset = ShapeTypeValues.Rectangle}
-                    ));
+            //var result = new ShapeProperties(
+            //    new Transform2D(
+            //        new Offset() { X = posX, Y = posY },
+            //        new Extents() { Cx = width, Cy = height },
+            //        new PresetGeometry(new AdjustValueList()) { Preset = ShapeTypeValues.Rectangle},
+            //        new SolidFill(new NoFill()),
+            //        new Outline(new NoFill())
+            //        ));
 
-            element.Append(result);
-            return result;
+            var shapeProperties = (element as Picture).ShapeProperties = new ShapeProperties();
+
+            var aTransform2D = new Transform2D();
+
+            var aOffset = new Offset();
+            aOffset.X = 3767260;
+            aOffset.Y = 50259;
+
+            aTransform2D.Append(aOffset);
+
+            var aExtents = new Extents();
+            aExtents.Cx = 228745;
+            aExtents.Cy = 285750;
+
+            aTransform2D.Append(aExtents);
+
+            shapeProperties.Append(aTransform2D);
+
+            var aPresetGeometry = new PresetGeometry();
+            aPresetGeometry.Preset = ShapeTypeValues.Rectangle;
+
+            var aAdjustValueList = new AdjustValueList();
+
+            aPresetGeometry.Append(aAdjustValueList);
+
+            shapeProperties.Append(aPresetGeometry);
+
+            //element.Append(result);
+            return shapeProperties;
         }
     }
 }

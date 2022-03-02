@@ -18,6 +18,7 @@
     using TextBody = DocumentFormat.OpenXml.Presentation.TextBody;
     using GroupShape = DocumentFormat.OpenXml.Presentation.GroupShape;
     using ShapeStyle = DocumentFormat.OpenXml.Presentation.ShapeStyle;
+    using Text = DocumentFormat.OpenXml.Presentation.Text;
 
     public static class ShapeBuilder
     {
@@ -42,13 +43,20 @@
             if (element == null)
                 throw new ArgumentNullException(nameof(element));
 
-            var result = new ShapeProperties(
-                new Transform2D(new Offset { X = posX, Y = posY }, new Extents { Cx = width, Cy = height }),
-                new PresetGeometry(new AdjustValueList()) { Preset = D.ShapeTypeValues.Rectangle },
-                new SolidFill(new RgbColorModelHex { Val = backgroundColor ?? "FFFFFF" }),
-                new Outline(new NoFill())
-                );
+            var result = new ShapeProperties();
 
+            result.Append(new Transform2D(new Offset { X = posX, Y = posY }, new Extents { Cx = width, Cy = height }));
+            result.Append(new PresetGeometry(new AdjustValueList()) { Preset = D.ShapeTypeValues.Rectangle });
+            if(backgroundColor != null)
+            {
+                result.Append(new SolidFill(new RgbColorModelHex { Val = backgroundColor }));
+            }
+            else
+            {
+                result.Append(new NoFill());
+            }
+
+            result.Append(new Outline(new NoFill()));
             element.Append(result);
             return result;
         }
@@ -96,6 +104,46 @@
                     new BodyProperties(),
                     new ListStyle(),
                     paragraph
+                    );
+            element.Append(result);
+            return result;
+        }
+
+        public static TextBody AppendOpeningTextBox<T>(this T element) where T : Shape
+        {
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
+
+            var paragraph1 = new Paragraph();
+
+            paragraph1.Append(new ParagraphProperties { Alignment = TextAlignmentTypeValues.Center });
+            paragraph1.Append(new Run(
+                    new RunProperties(
+                        new SolidFill(new SchemeColor() { Val = SchemeColorValues.Background1}),
+                        new LatinFont { Typeface = "Klavika Medium Condensed" , Panose = "020B0506040000020004" , PitchFamily = 34 , CharacterSet=0}
+                        ){ Language = "en-US", FontSize = 3200, },
+                    new D.Text("OPENING SLIDE")
+                    ));
+            paragraph1.Append(new EndParagraphRunProperties() { Language = "en-US" });
+
+            var paragraph2 = new Paragraph();
+
+            paragraph2.Append(new ParagraphProperties { Alignment = TextAlignmentTypeValues.Center });
+            paragraph2.Append(new Run(
+                    new RunProperties(
+                        new SolidFill(new SchemeColor() { Val = SchemeColorValues.Background1 }),
+                        new LatinFont { Typeface = "Klavika Condensed", Panose = "020B0506040000020004", PitchFamily = 34, CharacterSet = 0 }
+                        )
+                    { Language = "en-US", FontSize = 2400, },
+                    new D.Text("Edited by Programmer post-export")
+                    ));
+            paragraph2.Append(new EndParagraphRunProperties() { Language = "en-US" });
+
+            var result = new TextBody(
+                    new BodyProperties(),
+                    new ListStyle(),
+                    paragraph1,
+                    paragraph2
                     );
             element.Append(result);
             return result;
