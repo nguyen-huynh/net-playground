@@ -16,6 +16,8 @@
     using NonVisualShapeDrawingProperties = DocumentFormat.OpenXml.Presentation.NonVisualShapeDrawingProperties;
     using ShapeProperties = DocumentFormat.OpenXml.Presentation.ShapeProperties;
     using TextBody = DocumentFormat.OpenXml.Presentation.TextBody;
+    using GroupShape = DocumentFormat.OpenXml.Presentation.GroupShape;
+    using Picture = DocumentFormat.OpenXml.Presentation.Picture;
 
     public partial class PresentationBuilder
     {
@@ -26,97 +28,8 @@
                 new EffectList()));
         }
 
-        private SlidePart CreateSlidePart(PresentationPart presentationPart, string slideId = null)
-        {
-            slideId = slideId ?? this.GenerateRelationshipId<SlideId>();
-            SlidePart slidePart = presentationPart.AddNewPart<SlidePart>(slideId);
-            slidePart.Slide = new Slide(
-                    new CommonSlideData(
-                        GetVVaBackground(),
-                        new ShapeTree(
-                            new P.NonVisualGroupShapeProperties(
-                                new P.NonVisualDrawingProperties() { Id = (UInt32Value)1U, Name = "" },
-                                new P.NonVisualGroupShapeDrawingProperties(),
-                                new ApplicationNonVisualDrawingProperties()),
-                            new GroupShapeProperties(new TransformGroup()),
-                            new P.Shape(
-                                new P.NonVisualShapeProperties(
-                                    new P.NonVisualDrawingProperties() { Id = (UInt32Value)2U, Name = "Title 1" },
-                                    new P.NonVisualShapeDrawingProperties(new ShapeLocks() { NoGrouping = true }),
-                                    new ApplicationNonVisualDrawingProperties(new PlaceholderShape())),
-                                new P.ShapeProperties(),
-                                new P.TextBody(
-                                    new BodyProperties(),
-                                    new ListStyle(),
-                                    new Paragraph(new EndParagraphRunProperties() { Language = "en-US" }))))),
-                    new ColorMapOverride(new MasterColorMapping()));
-            return slidePart;
-        }
-    
-        private SlidePart CreateOpeningVVASlide(PresentationPart presentationPart, string slideId = null)
-        {
-            slideId = slideId ?? this.GenerateRelationshipId<SlideId>();
-            SlidePart slidePart = presentationPart.AddNewPart<SlidePart>(slideId);
-            slidePart.Slide = new Slide(
-                    new CommonSlideData(
-                        GetVVaBackground(),
-                        new ShapeTree(
-                            new P.NonVisualGroupShapeProperties(
-                                new P.NonVisualDrawingProperties() { Id = (UInt32Value)1U, Name = "" },
-                                new P.NonVisualGroupShapeDrawingProperties(),
-                                new ApplicationNonVisualDrawingProperties()),
-                            new GroupShapeProperties(new TransformGroup()),
-                            new P.Shape(
-                                new P.NonVisualShapeProperties(
-                                    new P.NonVisualDrawingProperties() { Id = (UInt32Value)2U, Name = "Title 1" },
-                                    new P.NonVisualShapeDrawingProperties(new ShapeLocks() { NoGrouping = true }),
-                                    new ApplicationNonVisualDrawingProperties(new PlaceholderShape())),
-                                new P.ShapeProperties(),
-                                new P.TextBody(
-                                    new BodyProperties(),
-                                    new ListStyle(),
-                                    new Paragraph(new EndParagraphRunProperties() { Language = "en-US" }))))),
-                    new ColorMapOverride(new MasterColorMapping()));
-            return slidePart;
-        }
 
-        private SlidePart InsertOpeningVVASlide (PresentationPart presentationPart, int position, string slideId = null)
-        {
-            var slide = new Slide(
-                    new CommonSlideData(
-                        GetVVaBackground(),
-                        new ShapeTree(
-                            new P.NonVisualGroupShapeProperties(
-                                new P.NonVisualDrawingProperties() { Id = (UInt32Value)1U, Name = "" },
-                                new P.NonVisualGroupShapeDrawingProperties(),
-                                new ApplicationNonVisualDrawingProperties()),
-                            new GroupShapeProperties(new TransformGroup()),
-                            new P.Shape(
-                                new P.NonVisualShapeProperties(
-                                    new P.NonVisualDrawingProperties() { Id = (UInt32Value)2U, Name = "Title 1" },
-                                    new P.NonVisualShapeDrawingProperties(new ShapeLocks() { NoGrouping = true }),
-                                    new ApplicationNonVisualDrawingProperties(new PlaceholderShape())),
-                                new P.ShapeProperties(),
-                                new P.TextBody(
-                                    new BodyProperties(),
-                                    new ListStyle(),
-                                    new Paragraph(new Run(new D.Text() { Text = "slide TITLE" }), new EndParagraphRunProperties() { Language = "en-US" }))),
-                            new P.Shape(
-                                new P.NonVisualShapeProperties(
-                                    new P.NonVisualDrawingProperties() { Id = 3U, Name = "Content Placeholder" },
-                                    new P.NonVisualShapeDrawingProperties(new ShapeLocks() { NoGrouping = true }),
-                                    new ApplicationNonVisualDrawingProperties(new PlaceholderShape() { Index = 1 })),
-                                new P.TextBody(new BodyProperties(),new ListStyle(),new Paragraph())
-                            )),
-                    new ColorMapOverride(new MasterColorMapping())));
-
-            slideId = slideId ?? this.GenerateRelationshipId<SlideId>();
-            var slidePart = presentationPart.AddNewPart<SlidePart>(slideId);
-            slide.Save(slidePart);
-            return slidePart;
-        }
-
-        private void GenerateOpeningSlidePart(ref SlidePart openingSlidePart)
+        private void GenerateOpeningSlidePart(ref SlidePart openingSlidePart, ImagePart otflogoImagePart)
         {
             Slide slide = new Slide();
 
@@ -124,31 +37,19 @@
             slide.AddNamespaceDeclaration("r", "http://schemas.openxmlformats.org/officeDocument/2006/relationships");
             slide.AddNamespaceDeclaration("p", "http://schemas.openxmlformats.org/presentationml/2006/main");
 
-            slide.Append(new CommonSlideData(
-                        GetVVaBackground(),
-                        new ShapeTree(
-                            new NonVisualGroupShapeProperties(
-                                new NonVisualDrawingProperties() { Id = (UInt32Value)1U, Name = "" },
-                                new NonVisualGroupShapeDrawingProperties(),
-                                new ApplicationNonVisualDrawingProperties()),
-                            new GroupShapeProperties(new TransformGroup()),
-                            new Shape(
-                                new NonVisualShapeProperties(
-                                    new NonVisualDrawingProperties() { Id = (UInt32Value)2U, Name = "Title 1" },
-                                    new NonVisualShapeDrawingProperties(new ShapeLocks() { NoGrouping = true }),
-                                    new ApplicationNonVisualDrawingProperties(new PlaceholderShape())),
-                                new ShapeProperties(),
-                                new TextBody(
-                                    new BodyProperties(),
-                                    new ListStyle(),
-                                    new Paragraph(new EndParagraphRunProperties() { Language = "en-US" })))),
-                            GenerateTopWhiteRectangle(3U, name: "TopWhiteRectangle")
-                        ),
-                    new ColorMapOverride(new MasterColorMapping()));
+            var commonSlideData = new CommonSlideData();
+            commonSlideData.Append(GetVVaBackground());
+
+            var shapeTree = new ShapeTree();
+            this.GenerateTopWhiteRectangle(ref shapeTree, openingSlidePart, otflogoImagePart);
+
+            commonSlideData.Append(shapeTree);
+            slide.Append(commonSlideData);
+            slide.Append(new ColorMapOverride(new MasterColorMapping()));
 
             openingSlidePart.Slide = slide;
         }
-        
+
         private void GenerateVVASlidePart(ref SlidePart slidePart)
         {
             Slide slide = new Slide();
@@ -161,13 +62,13 @@
                         GetVVaBackground(),
                         new ShapeTree(
                             new P.NonVisualGroupShapeProperties(
-                                new P.NonVisualDrawingProperties() { Id = (UInt32Value)1U, Name = "" },
+                                new P.NonVisualDrawingProperties() { Id = this.NewId, Name = "" },
                                 new P.NonVisualGroupShapeDrawingProperties(),
                                 new ApplicationNonVisualDrawingProperties()),
                             new GroupShapeProperties(new TransformGroup()),
                             new P.Shape(
                                 new P.NonVisualShapeProperties(
-                                    new P.NonVisualDrawingProperties() { Id = (UInt32Value)2U, Name = "Title 1" },
+                                    new P.NonVisualDrawingProperties() { Id = this.NewId, Name = "Title 1" },
                                     new P.NonVisualShapeDrawingProperties(new ShapeLocks() { NoGrouping = true }),
                                     new ApplicationNonVisualDrawingProperties(new PlaceholderShape())),
                                 new P.ShapeProperties(),
@@ -180,35 +81,50 @@
             slidePart.Slide = slide;
         }
 
-        private OpenXmlElement GenerateTopWhiteRectangle(UInt32Value id, string name = null)
+        private void GenerateTopWhiteRectangle(ref ShapeTree shapeTree, SlidePart openingSlidePart, ImagePart otflogoImagePart)
         {
-            var shape = new Shape();
+            shapeTree.Append(new NonVisualGroupShapeProperties(
+                                new NonVisualDrawingProperties() { Id = this.NewId, Name = "" },
+                                new NonVisualGroupShapeDrawingProperties(),
+                                new ApplicationNonVisualDrawingProperties()));
 
-            var nonVisualShapeProperties = new NonVisualShapeProperties(
-                                    new NonVisualDrawingProperties() { Id = id, Name = name ?? "TopWhiteRectangle" },
-                                    new NonVisualShapeDrawingProperties(new ShapeLocks() { NoGrouping = true }),
-                                    new ApplicationNonVisualDrawingProperties(new PlaceholderShape()));
+            shapeTree.Append(new GroupShapeProperties(new TransformGroup()));
 
-            var shapeProperties = new P.ShapeProperties(
-                new Transform2D(new Offset { X = 0, Y = 0 }, new Extents { Cx = SLIDE_WIDTH, Cy = 389088 }),
-                new PresetGeometry(new AdjustValueList()) { Preset = D.ShapeTypeValues.Rectangle},
-                new SolidFill(new RgbColorModelHex { Val = "FFFFFF"}),
-                new Outline(new NoFill())
-                );
+            GroupShape groupShape = new GroupShape();
 
-            var shapeStyle = new P.ShapeStyle(
-                    new LineReference( new SchemeColor (new Shade { Val = 50000}) { Val = SchemeColorValues.Accent1}) { Index = 2U},
-                    new FillReference(new SchemeColor () { Val = SchemeColorValues.Accent1 } ) { Index = 1U }
-                );
+            groupShape.AppendDefaultNonVisualGroupShapeProperties(id: this.NewId, name: "BlockInfo");
+            groupShape.AppendDefaultGroupShapeProperties(width: SLIDE_WIDTH, height: 389088);
 
-            var textBody = new P.TextBody(
-                    new BodyProperties(),
-                    new ListStyle(),
-                    new Paragraph(new EndParagraphRunProperties() { Language = "en-US" }));
+            var whiteShape = new Shape();
+            whiteShape.AppendDefaultNonVisualShapeProperties(id: this.NewId, name: "TopWhiteRec");
+            whiteShape.AppendDefaultShapeProperties(width: SLIDE_WIDTH, height: 389088, backgroundColor: "FFFFFF");
+            whiteShape.AppendDefaultShapeStyle();
+            whiteShape.AppendDefaultTextBody(" ");
+            groupShape.Append(whiteShape);
 
-            shape.Append(nonVisualShapeProperties, shapeProperties, shapeStyle, textBody);
+            var blockNameShape = new Shape();
+            blockNameShape.AppendDefaultNonVisualShapeProperties(id: this.NewId, name: "BlockName");
+            blockNameShape.AppendDefaultShapeProperties(width: (SLIDE_WIDTH - 228745) / 2, height: 389088);
+            blockNameShape.AppendDefaultShapeStyle();
+            blockNameShape.AppendDefaultTextBody(text: "Block Name");
+            groupShape.Append(blockNameShape);
 
-            return shape;
+            var blockDurationShape = new Shape();
+            blockDurationShape.AppendDefaultNonVisualShapeProperties(id: this.NewId, name: "BlockDuration");
+            blockDurationShape.AppendDefaultShapeProperties(posX: (SLIDE_WIDTH + 228745) / 2, width: (SLIDE_WIDTH - 228745) / 2, height: 389088);
+            blockDurationShape.AppendDefaultShapeStyle();
+            blockDurationShape.AppendDefaultTextBody(text: "00:00", textAlignment: TextAlignmentTypeValues.Right);
+            groupShape.Append(blockDurationShape);
+
+
+            var otfLogoPicture = new Picture();
+            otfLogoPicture.AppendNonVisualPictureProperties(id: this.NewId, name: "OTFLogo");
+            otfLogoPicture.AppendBlipFill(imageRId: openingSlidePart.GetIdOfPart(otflogoImagePart), isStrechShape: true);
+            otfLogoPicture.AppendShapeProperties(posX: (SLIDE_WIDTH - 228745) / 2, posY: 50259, width: 228745, height: 285750);
+            //otfLogoPicture.AppendDefaultShapeStyle();
+            groupShape.Append(otfLogoPicture);
+
+            shapeTree.Append(groupShape);
         }
     }
 }

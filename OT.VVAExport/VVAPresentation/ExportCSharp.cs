@@ -19,7 +19,9 @@ namespace OT.VVAExport.VVAPresentation
                     if (ppt != null)
                     {
                         // Generate VB.NET source code
+#pragma warning disable CA1416 // Validate platform compatibility
                         var cSharp = new CSharpCodeProvider();
+#pragma warning restore CA1416 // Validate platform compatibility
 
                         // Save the source code to the target file
                         using (var target = targetFile.Open(FileMode.Create, FileAccess.ReadWrite))

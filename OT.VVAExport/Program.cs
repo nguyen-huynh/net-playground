@@ -1,5 +1,6 @@
 ﻿namespace OT.VVAExport
 {
+    using Newtonsoft.Json;
     using OT.VVAExport.VVAPresentation;
     using System;
     using System.IO;
@@ -8,11 +9,15 @@
     {
         private static void Main(string[] args)
         {
+            //Console.WriteLine(JsonConvert.SerializeObject(args));
             //var slides = JsonConvert.DeserializeObject<IEnumerable<VVASlide>>(System.IO.File.ReadAllText("./data.json"));
 
-            Console.WriteLine("1. Generate CSharp file , 2. Export VVA");
-            var toolChoice = Console.ReadLine();
-
+            var toolChoice = args.Length > 0 ? args[0] : string.Empty;
+            if (string.IsNullOrEmpty(toolChoice))
+            {
+                Console.WriteLine("1. Generate CSharp file , 2. Export VVA");
+                toolChoice = Console.ReadLine();
+            }
             if(toolChoice == "1")
             {
                 var exportTool = new ExportCSharp();

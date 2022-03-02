@@ -11,6 +11,7 @@
     using P = DocumentFormat.OpenXml.Presentation;
     using D = DocumentFormat.OpenXml.Drawing;
     using IO = System.IO;
+    using System.IO;
 
     /// <summary>
     /// Follow the OpenXml Docs
@@ -26,7 +27,7 @@
         private PresentationDocument _presentationDocument = null;
         private PresentationPart _presentationPart = null;
 
-        public void Create(string? filePath = null)
+        public void Create(string filePath = null)
         {
             PresentationDocument presentationDocument = null;
             try
@@ -37,8 +38,7 @@
                 if (!IO.Path.IsPathFullyQualified(filePath))
                     filePath = IO.Path.Combine(IO.Path.GetFullPath(filePath));
 
-                RelationshipIds.Clear();
-                RelationshipIdHolders.Clear();
+                this.CleanRelationshipId();
 
                 _presentationDocument = presentationDocument = PresentationDocument.Create(filePath, PresentationDocumentType.Presentation);
                 PresentationPart presentationPart = _presentationPart = presentationDocument.AddPresentationPart();
@@ -88,9 +88,17 @@
 
         private void CreatePresentationParts(PresentationPart presentationPart)
         {
+            //var imagePartId = this.GeneratePartRelationshipId<ImagePart>();
             var slideMasterId = GenerateRelationshipId<SlideMasterId>();
             var openingSlidePart = presentationPart.AddNewPart<SlidePart>(this.GenerateRelationshipId<SlideId>());
-            this.GenerateOpeningSlidePart(ref openingSlidePart);
+            
+            ImagePart otfImagePart = openingSlidePart.AddImagePart(ImagePartType.Png);
+            using (IO.Stream stream = new IO.MemoryStream(File.ReadAllBytes(IO.Path.GetFullPath("./otf-logo.png"))))
+            {
+                otfImagePart.FeedData(stream);
+                //stream.Close();
+            }
+            this.GenerateOpeningSlidePart(ref openingSlidePart, otfImagePart);
 
             var openingSlideLayoutPart = openingSlidePart.AddNewPart<SlideLayoutPart>(slideMasterId);
             this.GenerateOpeningSlideLayoutPart(ref openingSlideLayoutPart);
@@ -101,11 +109,11 @@
             slideMasterPart.AddPart(openingSlideLayoutPart, slideMasterId);
             presentationPart.AddPart(slideMasterPart, slideMasterId);
 
-            // Slide 2
-            var vvaSlide = presentationPart.AddNewPart<SlidePart>(this.GenerateRelationshipId<SlideId>());
-            this.GenerateVVASlidePart(ref vvaSlide);
+            //// Slide 2
+            //var vvaSlide = presentationPart.AddNewPart<SlidePart>(this.GenerateRelationshipId<SlideId>());
+            //this.GenerateVVASlidePart(ref vvaSlide);
 
-            vvaSlide.AddPart<SlideLayoutPart>(openingSlideLayoutPart, slideMasterId);
+            //vvaSlide.AddPart<SlideLayoutPart>(openingSlideLayoutPart, slideMasterId);
 
             var themePart = CreateTheme(slideMasterPart);
             presentationPart.AddPart(themePart, this.LastRelationshipIdOf<Theme>());
@@ -117,6 +125,6 @@
             presentationPart.Presentation.Append(this.GetIdList<SlideMasterId>(), this.GetIdList<SlideId>(), slideSize, notesSize, defaultTextStyle);
         }
 
-        
+       
     }
 }
