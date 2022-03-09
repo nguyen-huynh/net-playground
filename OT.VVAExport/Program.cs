@@ -21,7 +21,7 @@
             if(toolChoice == "1")
             {
                 var exportTool = new ExportCSharp();
-                exportTool.Excute("./Examples/Inputs/VideoExample.pptx");
+                exportTool.Excute("./Examples/Inputs/VVASample.pptx");
             }
             else if (toolChoice == "2")
             {
