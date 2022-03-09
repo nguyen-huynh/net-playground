@@ -61,31 +61,6 @@
             }
         }
 
-        //private void CreatePresentationParts(PresentationPart presentationPart)
-        //{
-        //    var slideMasterId = GenerateRelationshipId<SlideMasterId>();
-
-        //    var openingSlidePart = CreateOpeningVVASlide(presentationPart);
-        //    var slideLayoutPart = CreateSlideLayoutPart(openingSlidePart, slideMasterId);
-        //    var slideMasterPart = CreateSlideMasterPart(slideLayoutPart, slideMasterId);
-        //    slideMasterPart.AddPart(slideLayoutPart, slideMasterId);
-        //    presentationPart.AddPart(slideMasterPart, slideMasterId);
-
-        //    var vvaSlidePart = CreateSlidePart(presentationPart);
-        //    var slideLayoutPart2 = CreateSlideLayoutPart(vvaSlidePart, slideMasterId);
-
-        //    //slideMasterPart.AddPart(slideLayoutPart2);
-        //    //presentationPart.AddPart(slideMasterPart2, slideMasterId2);
-        //    var themePart = CreateTheme(slideMasterPart);
-        //    presentationPart.AddPart(themePart, this.LastRelationshipIdOf<Theme>());
-
-        //    SlideSize slideSize = new SlideSize() { Cx = 7772400, Cy = 4572000 };
-        //    NotesSize notesSize = new NotesSize() { Cx = 6858000, Cy = 9144000 };
-        //    DefaultTextStyle defaultTextStyle = new DefaultTextStyle();
-
-        //    presentationPart.Presentation.Append(this.GetIdList<SlideMasterId>(), this.GetIdList<SlideId>(), slideSize, notesSize, defaultTextStyle);
-        //}
-
         private void CreatePresentationParts(PresentationPart presentationPart)
         {
             //var imagePartId = this.GeneratePartRelationshipId<ImagePart>();

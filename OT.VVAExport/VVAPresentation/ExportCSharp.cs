@@ -9,8 +9,10 @@ namespace OT.VVAExport.VVAPresentation
     {
         public void Excute(string sourcePath = @"./VVASample.pptx")
         {
+            sourcePath = Path.GetFullPath(sourcePath);
+            var dir = Path.GetDirectoryName(sourcePath);
             var sourceFile = new FileInfo(sourcePath);
-            var targetFile = new FileInfo(Path.GetFileNameWithoutExtension(sourcePath) + ".cs");
+            var targetFile = new FileInfo(Path.Combine(dir, Path.GetFileNameWithoutExtension(sourcePath) + ".cs"));
 
             using (var source = sourceFile.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
             {

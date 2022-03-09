@@ -6,6 +6,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Examples\**" />
+    <Compile Remove="Outputs\**" />
+    <EmbeddedResource Remove="Examples\**" />
+    <EmbeddedResource Remove="Outputs\**" />
+    <None Remove="Examples\**" />
+    <None Remove="Outputs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="data.json" />
     <None Remove="otf-logo.jpg" />
     <None Remove="otf-logo.png" />
@@ -31,11 +40,6 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Serialize.OpenXml.CodeGen" Version="0.4.2-beta" />
     <PackageReference Include="System.CodeDom" Version="6.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Outputs\" />
-    <Content Include="Outputs\**\*.*" />
   </ItemGroup>
 
   <ItemGroup>

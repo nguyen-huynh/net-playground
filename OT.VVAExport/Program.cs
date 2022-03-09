@@ -21,15 +21,15 @@
             if(toolChoice == "1")
             {
                 var exportTool = new ExportCSharp();
-                exportTool.Excute();
+                exportTool.Excute("./Examples/Inputs/VideoExample.pptx");
             }
             else if (toolChoice == "2")
             {
                 //// Export VVA Slides
-                if (!Directory.Exists(Path.Combine(@"C:\Users\hnnguyen\Desktop\Outputs")))
-                    _ = Directory.CreateDirectory(Path.Combine(@"C:\Users\hnnguyen\Desktop\Outputs"));
+                if (!Directory.Exists(Path.GetFullPath("./Examples/Outputs")))
+                    _ = Directory.CreateDirectory(Path.GetFullPath("./Examples/Outputs"));
 
-                var filePath = Path.Combine(@"C:\Users\hnnguyen\Desktop", $@"Outputs/VVAExported{DateTime.Now.ToString("HHmmss")}.pptx");
+                var filePath = Path.Combine(Path.GetFullPath("./Examples/Outputs"), $@"VVAExported{DateTime.Now.ToString("HHmmss")}.pptx");
                 var builder = new PresentationBuilder();
                 builder.Create(filePath);
 
