@@ -42,14 +42,14 @@
 
         public override void GenerateSlide()
         {
-            base.GenerateSlide();
+            if (SlidePart == null) return;
+            SlidePart.Slide = SlidePart.Slide ?? new Slide();
 
             ExerciseVideoImagePart = this.SlidePart.AddImagePart(ImagePartType.Png);
             using (var stream = File.OpenRead("./video.png"))
             {
                 ExerciseVideoImagePart.FeedData(stream);
             }
-            this.SlidePart.ChangeIdOfPart(ExerciseVideoImagePart, this._presentationBuilder.LastRelationshipIdOf<Picture>());
 
             ExerciseMediaDataPart = _presentationDocument.CreateMediaDataPart("video/mp4", "mp4");
             using (var stream = File.OpenRead("./video.mp4"))
@@ -57,10 +57,15 @@
                 ExerciseMediaDataPart.FeedData(stream);
             }
 
-            this.SlidePart.AddVideoReferenceRelationship(ExerciseMediaDataPart, this._presentationBuilder.LastRelationshipIdOf<Video>());
-            this.SlidePart.AddMediaReferenceRelationship(ExerciseMediaDataPart, this._presentationBuilder.LastRelationshipIdOf<P14.Media>());
-            this.SlidePart.Slide.Save();
-            //this.AddExerciseTiming();
+            this.SlidePart.AddVideoReferenceRelationship(ExerciseMediaDataPart);
+            this.SlidePart.AddMediaReferenceRelationship(ExerciseMediaDataPart);
+
+            
+            SlidePart.Slide.Save();
+
+            base.GenerateSlide();
+
+            this.AddExerciseTiming();
         }
 
         private void AddExerciseTiming()
@@ -79,7 +84,7 @@
             ParallelTimeNode parallelTimeNode = new ParallelTimeNode();
 
             CommonTimeNode commonTimeNode = new CommonTimeNode();
-            commonTimeNode.Id = 1u;
+            commonTimeNode.Id = this._presentationBuilder.NewId;
             commonTimeNode.Duration = "indefinite";
             commonTimeNode.Restart = TimeNodeRestartValues.Never;
             commonTimeNode.NodeType = TimeNodeValues.TmingRoot;
@@ -91,7 +96,7 @@
             sequenceTimeNode.NextAction = NextActionValues.Seek;
 
             CommonTimeNode commonTimeNode1 = new CommonTimeNode();
-            commonTimeNode1.Id = 2u;
+            commonTimeNode1.Id = this._presentationBuilder.NewId;
             commonTimeNode1.Duration = "indefinite";
             commonTimeNode1.NodeType = TimeNodeValues.MainSequence;
 
@@ -100,7 +105,7 @@
             ParallelTimeNode parallelTimeNode1 = new ParallelTimeNode();
 
             CommonTimeNode commonTimeNode2 = new CommonTimeNode();
-            commonTimeNode2.Id = 3u;
+            commonTimeNode2.Id = this._presentationBuilder.NewId;
             commonTimeNode2.Fill = TimeNodeFillValues.Hold;
 
             StartConditionList startConditionList = new StartConditionList();
@@ -115,7 +120,7 @@
             condition.Event = TriggerEventValues.OnBegin;
 
             TimeNode timeNode = new TimeNode();
-            timeNode.Val = 2u;
+            timeNode.Val = this._presentationBuilder.NewId;
 
             condition.Append(timeNode);
 
@@ -128,7 +133,7 @@
             ParallelTimeNode parallelTimeNode2 = new ParallelTimeNode();
 
             CommonTimeNode commonTimeNode3 = new CommonTimeNode();
-            commonTimeNode3.Id = 4u;
+            commonTimeNode3.Id = this._presentationBuilder.NewId;
             commonTimeNode3.Fill = TimeNodeFillValues.Hold;
 
             startConditionList = new StartConditionList();
@@ -145,7 +150,7 @@
             ParallelTimeNode parallelTimeNode3 = new ParallelTimeNode();
 
             CommonTimeNode commonTimeNode4 = new CommonTimeNode();
-            commonTimeNode4.Id = 5u;
+            commonTimeNode4.Id = this._presentationBuilder.NewId;
             commonTimeNode4.PresetId = 1;
             commonTimeNode4.PresetSubtype = 0;
             commonTimeNode4.PresetClass = TimeNodePresetClassValues.MediaCall;
@@ -170,7 +175,7 @@
             CommonBehavior commonBehavior = new CommonBehavior();
 
             CommonTimeNode commonTimeNode5 = new CommonTimeNode();
-            commonTimeNode5.Id = 6u;
+            commonTimeNode5.Id = this._presentationBuilder.NewId;
             commonTimeNode5.Duration = "5000";
             commonTimeNode5.Fill = TimeNodeFillValues.Hold;
 
@@ -255,7 +260,7 @@
             commonMediaNode.Volume = 80000;
 
             commonTimeNode5 = new CommonTimeNode();
-            commonTimeNode5.Id = 7u;
+            commonTimeNode5.Id = this._presentationBuilder.NewId;
             commonTimeNode5.RepeatCount = "indefinite";
             commonTimeNode5.Display = false;
             commonTimeNode5.Fill = TimeNodeFillValues.Hold;
@@ -337,7 +342,7 @@
 
             var exerciseGroupShape = GetExerciseGroupShape();
             shapeTree.Append(exerciseGroupShape);
-
+            
             return shapeTree;
         }
 
@@ -365,7 +370,7 @@
             whiteShape.AppendDefaultTextBody(" ");
             groupShape.Append(whiteShape);
 
-
+            
             var exerciseNameShape = new Shape();
             exerciseNameShape.AppendDefaultNonVisualShapeProperties(id: _presentationBuilder.NewId, name: "ExerciseName");
             exerciseNameShape.AppendDefaultShapeProperties(posX: groupShape.GroupShapeProperties.TransformGroup.Offset.X,
@@ -381,18 +386,18 @@
                                                     textBoxFit: ShapeBuilder.TextBoxFit.ShrinkTextOnOverflow);
             groupShape.Append(exerciseNameShape);
 
-            //if (ExerciseVideoImagePart != null && ExerciseMediaDataPart != null)
-            //{
+            if(ExerciseVideoImagePart != null && ExerciseMediaDataPart != null)
+            {
                 var videoPicture = new Picture();
                 videoPicture.AppendNonVisualPictureProperties(id: _presentationBuilder.NewId, name: "ExerciseVideo", uri: $@"{{{Guid.NewGuid()}}}");
 
                 videoPicture.NonVisualPictureProperties.NonVisualDrawingProperties.Append(new HyperlinkOnClick { Id = "", Action = "ppaction://media" });
+                
+                var videoRId = this.SlidePart.DataPartReferenceRelationships.Where(x => x.GetType() == typeof(VideoReferenceRelationship) && x.DataPart == ExerciseMediaDataPart).First();
+                videoPicture.NonVisualPictureProperties.ApplicationNonVisualDrawingProperties.Append(new VideoFromFile() { Link = videoRId.Id });
 
-                //var videoRId = this.SlidePart.DataPartReferenceRelationships.Where(x => x.GetType() == typeof(VideoReferenceRelationship) && x.DataPart == ExerciseMediaDataPart).First();
-                videoPicture.NonVisualPictureProperties.ApplicationNonVisualDrawingProperties.Append(new VideoFromFile() { Link = /*videoRId.Id*/ this._presentationBuilder.GenerateRelationshipId<Video>() });
-
-                //var videoMediaRId = this.SlidePart.DataPartReferenceRelationships.Where(x => x.GetType() == typeof(MediaReferenceRelationship) && x.DataPart == ExerciseMediaDataPart).First();
-                P14.Media videoMedia = new P14.Media() { Embed = /*videoMediaRId.Id*/ this._presentationBuilder.GenerateRelationshipId<P14.Media>() };
+                var videoMediaRId = this.SlidePart.DataPartReferenceRelationships.Where(x => x.GetType() == typeof(MediaReferenceRelationship) && x.DataPart == ExerciseMediaDataPart).First();
+                P14.Media videoMedia = new P14.Media() { Embed = videoMediaRId.Id };
                 videoMedia.Append(new P14.MediaTrim() { End = "5000" });
 
                 videoMedia.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
@@ -401,14 +406,16 @@
                         new ApplicationNonVisualDrawingPropertiesExtension(videoMedia)
                         ));
 
-                videoPicture.AppendBlipFill(imageRId: /*SlidePart.GetIdOfPart(ExerciseVideoImagePart)*/ this._presentationBuilder.GenerateRelationshipId<Picture>(), isStrechShape: true);
+                videoPicture.AppendBlipFill(imageRId: SlidePart.GetIdOfPart(ExerciseVideoImagePart), isStrechShape: true);
                 videoPicture.AppendShapeProperties(posX: groupShape.GroupShapeProperties.TransformGroup.Offset.X,
                                                      posY: groupShape.GroupShapeProperties.TransformGroup.Offset.Y.Value + exerciseNameShape.ShapeProperties.Transform2D.Extents.Cy.Value,
                                                      width: groupShape.GroupShapeProperties.TransformGroup.Extents.Cx,
                                                      height: VVAConstants.PixelToOpenXmlUnit(121));
                 groupShape.Append(videoPicture);
 
-            //}
+                Timing timing = new Timing();
+
+            }
 
             //var videoShape = new Shape();
             //videoShape.AppendDefaultNonVisualShapeProperties(id: _presentationBuilder.NewId, name: "VideoRec");

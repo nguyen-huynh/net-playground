@@ -21,6 +21,7 @@
     <None Remove="video.mp4" />
     <None Remove="video.mpeg" />
     <None Remove="video.png" />
+    <None Remove="video.wmv" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,10 +40,10 @@
     <Content Include="video.mp4">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="video.mpeg">
+    <Content Include="video.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="video.png">
+    <Content Include="video.wmv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
