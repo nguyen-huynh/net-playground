@@ -10,18 +10,7 @@
 
     public partial class PresentationBuilder
     {
-        private SlideLayoutPart CreateSlideLayoutPart(SlidePart slidePart, string slideMasterId = null)
-        {
-            slideMasterId = slideMasterId ?? this.LastRelationshipIdOf<SlideMasterId>();
-            SlideLayoutPart slideLayoutPart = slidePart.AddNewPart<SlideLayoutPart>(slideMasterId);
-            SlideLayout slideLayout = new SlideLayout(
-            );
-            slideLayoutPart.SlideLayout = slideLayout;
-            return slideLayoutPart;
-        }
-
-
-        private void GenerateOpeningSlideLayoutPart(ref SlideLayoutPart openingSlideLayoutPart)
+        private void GenerateSlideLayoutPart(ref SlideLayoutPart openingSlideLayoutPart)
         {
             SlideLayout slideLayout = new SlideLayout();
 

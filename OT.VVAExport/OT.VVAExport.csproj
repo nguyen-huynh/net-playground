@@ -18,6 +18,9 @@
     <None Remove="data.json" />
     <None Remove="otf-logo.jpg" />
     <None Remove="otf-logo.png" />
+    <None Remove="video.mp4" />
+    <None Remove="video.mpeg" />
+    <None Remove="video.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,6 +34,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Program.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="video.mp4">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="video.mpeg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="video.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

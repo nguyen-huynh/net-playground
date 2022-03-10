@@ -34,7 +34,7 @@
         }
 
         private UInt32Value _newId = 0U;
-        private UInt32Value NewId
+        public UInt32Value NewId
         {
             get
             {
@@ -42,7 +42,7 @@
             }
         }
 
-        private string GenerateRelationshipId<T>() where T : OpenXmlCompositeElement
+        internal string GenerateRelationshipId<T>() where T : OpenXmlCompositeElement
         {
             string value = null;
             try
@@ -68,7 +68,7 @@
             return value;
         }
 
-        private string GeneratePartRelationshipId<T>() where T : OpenXmlPart
+        internal string GeneratePartRelationshipId<T>() where T : OpenXmlPart
         {
             string value = null;
             try
@@ -94,7 +94,7 @@
             return value;
         }
 
-        private string LastRelationshipIdOf<T>() where T : OpenXmlCompositeElement
+        internal string LastRelationshipIdOf<T>() where T : OpenXmlCompositeElement
         {
             var type = typeof(T);
             if (RelationshipIdHolders.ContainsKey(type))
@@ -106,7 +106,7 @@
                 throw new ArgumentOutOfRangeException();
         }
 
-        private string LastPartRelationshipIdOf<T>() where T : OpenXmlPart
+        internal string LastPartRelationshipIdOf<T>() where T : OpenXmlPart
         {
             var type = typeof(T);
             if (RelationshipIdHolders.ContainsKey(type))
@@ -118,7 +118,7 @@
                 throw new ArgumentOutOfRangeException();
         }
 
-        private OpenXmlElement GetIdList<T>() where T : OpenXmlCompositeElement
+        internal OpenXmlElement GetIdList<T>() where T : OpenXmlCompositeElement
         {
             var type = typeof(T);
             if (type == typeof(SlideMasterId))

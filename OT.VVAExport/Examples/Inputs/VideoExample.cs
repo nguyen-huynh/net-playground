@@ -1,17 +1,16 @@
 namespace OpenXmlSample
 {
     using DocumentFormat.OpenXml;
-    using DocumentFormat.OpenXml.Office2016.Drawing;
+    using DocumentFormat.OpenXml.Office2013.Theme;
     using DocumentFormat.OpenXml.Packaging;
     using DocumentFormat.OpenXml.Presentation;
     using System;
     using System.IO;
     using A = DocumentFormat.OpenXml.Drawing;
-    using A14 = DocumentFormat.OpenXml.Office2010.Drawing;
+    using A16 = DocumentFormat.OpenXml.Office2016.Drawing;
     using AP = DocumentFormat.OpenXml.ExtendedProperties;
     using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
     using P15 = DocumentFormat.OpenXml.Office2013.PowerPoint;
-    using THM15 = DocumentFormat.OpenXml.Office2013.Theme;
     using VT = DocumentFormat.OpenXml.VariantTypes;
     
     
@@ -49,7 +48,10 @@ namespace OpenXmlSample
             PresentationPart presentationPart = pkg.AddPresentationPart();
             this.GeneratePresentationPart(ref presentationPart);
 
-            SlidePart slidePart = presentationPart.AddNewPart<SlidePart>("rId3");
+            PresentationPropertiesPart presentationPropertiesPart = presentationPart.AddNewPart<PresentationPropertiesPart>("rId3");
+            this.GeneratePresentationPropertiesPart(ref presentationPropertiesPart);
+
+            SlidePart slidePart = presentationPart.AddNewPart<SlidePart>("rId2");
             this.GenerateSlidePart(ref slidePart);
 
             slidePart.AddExternalRelationship("http://schemas.openxmlformats.org/officeDocument/2006/relationships/video", new System.Uri("NULL"), "rId1");
@@ -105,35 +107,20 @@ namespace OpenXmlSample
 
             slideLayoutPart10.AddPart<SlideMasterPart>(slideMasterPart, "rId1");
             ImagePart imagePart = slidePart.AddImagePart("image/png");
-            slidePart.ChangeIdOfPart(imagePart, "rId5");
+            slidePart.ChangeIdOfPart(imagePart, "rId4");
             this.GenerateImagePart(ref imagePart);
 
-            ImagePart imagePart1 = slidePart.AddImagePart("image/png");
-            slidePart.ChangeIdOfPart(imagePart1, "rId4");
-            this.GenerateImagePart1(ref imagePart1);
-
-            TableStylesPart tableStylesPart = presentationPart.AddNewPart<TableStylesPart>("rId7");
-            this.GenerateTableStylesPart(ref tableStylesPart);
-
-            SlidePart slidePart1 = presentationPart.AddNewPart<SlidePart>("rId2");
-            this.GenerateSlidePart1(ref slidePart1);
-
-            slidePart1.AddExternalRelationship("http://schemas.openxmlformats.org/officeDocument/2006/relationships/video", new System.Uri("NULL"), "rId1");
-
-            slidePart1.AddPart<SlideLayoutPart>(slideLayoutPart, "rId3");
-            slidePart1.AddPart<ImagePart>(imagePart, "rId5");
-            slidePart1.AddPart<ImagePart>(imagePart1, "rId4");
 
             presentationPart.AddPart<SlideMasterPart>(slideMasterPart, "rId1");
 
+            TableStylesPart tableStylesPart = presentationPart.AddNewPart<TableStylesPart>("rId6");
+            this.GenerateTableStylesPart(ref tableStylesPart);
 
-            presentationPart.AddPart<ThemePart>(themePart, "rId6");
 
-            ViewPropertiesPart viewPropertiesPart = presentationPart.AddNewPart<ViewPropertiesPart>("rId5");
+            presentationPart.AddPart<ThemePart>(themePart, "rId5");
+
+            ViewPropertiesPart viewPropertiesPart = presentationPart.AddNewPart<ViewPropertiesPart>("rId4");
             this.GenerateViewPropertiesPart(ref viewPropertiesPart);
-
-            PresentationPropertiesPart presentationPropertiesPart = presentationPart.AddNewPart<PresentationPropertiesPart>("rId4");
-            this.GeneratePresentationPropertiesPart(ref presentationPropertiesPart);
 
             ExtendedFilePropertiesPart extendedFilePropertiesPart = pkg.AddExtendedFilePropertiesPart();
             pkg.ChangeIdOfPart(extendedFilePropertiesPart, "rId4");
@@ -143,7 +130,7 @@ namespace OpenXmlSample
         
         private void GenerateCoreFilePropertiesPart(ref CoreFilePropertiesPart part)
         {
-            string base64 = @"PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pg0KPGNwOmNvcmVQcm9wZXJ0aWVzIHhtbG5zOmNwPSJodHRwOi8vc2NoZW1hcy5vcGVueG1sZm9ybWF0cy5vcmcvcGFja2FnZS8yMDA2L21ldGFkYXRhL2NvcmUtcHJvcGVydGllcyIgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIiB4bWxuczpkY3Rlcm1zPSJodHRwOi8vcHVybC5vcmcvZGMvdGVybXMvIiB4bWxuczpkY21pdHlwZT0iaHR0cDovL3B1cmwub3JnL2RjL2RjbWl0eXBlLyIgeG1sbnM6eHNpPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL1hNTFNjaGVtYS1pbnN0YW5jZSI+PGRjOnRpdGxlPlBvd2VyUG9pbnQgUHJlc2VudGF0aW9uPC9kYzp0aXRsZT48ZGM6Y3JlYXRvcj5OZ3V5w6puIEh14buzbmggTmjhuq10PC9kYzpjcmVhdG9yPjxjcDpsYXN0TW9kaWZpZWRCeT5OZ3V5w6puIEh14buzbmggTmjhuq10PC9jcDpsYXN0TW9kaWZpZWRCeT48Y3A6cmV2aXNpb24+MzwvY3A6cmV2aXNpb24+PGRjdGVybXM6Y3JlYXRlZCB4c2k6dHlwZT0iZGN0ZXJtczpXM0NEVEYiPjIwMjItMDMtMDdUMTc6MTA6NDFaPC9kY3Rlcm1zOmNyZWF0ZWQ+PGRjdGVybXM6bW9kaWZpZWQgeHNpOnR5cGU9ImRjdGVybXM6VzNDRFRGIj4yMDIyLTAzLTA3VDE3OjQxOjUzWjwvZGN0ZXJtczptb2RpZmllZD48L2NwOmNvcmVQcm9wZXJ0aWVzPg==";
+            string base64 = @"PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pg0KPGNwOmNvcmVQcm9wZXJ0aWVzIHhtbG5zOmNwPSJodHRwOi8vc2NoZW1hcy5vcGVueG1sZm9ybWF0cy5vcmcvcGFja2FnZS8yMDA2L21ldGFkYXRhL2NvcmUtcHJvcGVydGllcyIgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIiB4bWxuczpkY3Rlcm1zPSJodHRwOi8vcHVybC5vcmcvZGMvdGVybXMvIiB4bWxuczpkY21pdHlwZT0iaHR0cDovL3B1cmwub3JnL2RjL2RjbWl0eXBlLyIgeG1sbnM6eHNpPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL1hNTFNjaGVtYS1pbnN0YW5jZSI+PGRjOnRpdGxlPlBvd2VyUG9pbnQgUHJlc2VudGF0aW9uPC9kYzp0aXRsZT48ZGM6Y3JlYXRvcj5OZ3V5w6puIEh14buzbmggTmjhuq10PC9kYzpjcmVhdG9yPjxjcDpsYXN0TW9kaWZpZWRCeT5OZ3V5w6puIEh14buzbmggTmjhuq10PC9jcDpsYXN0TW9kaWZpZWRCeT48Y3A6cmV2aXNpb24+NTwvY3A6cmV2aXNpb24+PGRjdGVybXM6Y3JlYXRlZCB4c2k6dHlwZT0iZGN0ZXJtczpXM0NEVEYiPjIwMjItMDMtMDdUMTc6MTA6NDFaPC9kY3Rlcm1zOmNyZWF0ZWQ+PGRjdGVybXM6bW9kaWZpZWQgeHNpOnR5cGU9ImRjdGVybXM6VzNDRFRGIj4yMDIyLTAzLTEwVDA1OjI1OjM4WjwvZGN0ZXJtczptb2RpZmllZD48L2NwOmNvcmVQcm9wZXJ0aWVzPg==";
 
             Stream mem = new MemoryStream(Convert.FromBase64String(base64), false);
             try
@@ -168,53 +155,34 @@ namespace OpenXmlSample
                 "gcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVY" +
                 "nLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEh" +
                 "YaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8" +
-                "vP09fb3+Pn6/9oADAMBAAIRAxEAPwD4aooor0ACiiigAooooAKKKKACiiigAooooAKKKKACuv8ACOj6R" +
-                "4m0e80ryZY/ErOZ7W8eTbbiJF3Osn93gOd2PTkVyFdp4Il03w/pV/4gub+Ca7j32ceiMCGukkTa5Zh91" +
-                "QGPTuvUcV5mYylHDt02+e65bX1l0Tt0b3vpbdrc9LL1GVdKoly2fNe23VrzXS2t9k9jH13wv/YOn288u" +
-                "oWtzLcOfKjtW8xXiHHmBxx94FdpweOlYddD4h17TdY0yyhtdOfTZLVmSONJTJH5R+Yli3zFyxPPAxgYr" +
-                "nq3wjqypXr/ABXe9u+m11t5swxSpKpaj8NltftrvZ7+QUUUV2HIFFFFABRRRQAUUUUAFFFFABRRRQAUU" +
-                "UUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUU" +
-                "UUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUU" +
-                "UUAFFFFABRRRQAUUUUAFFFFABRRX7sfBT4WeC7z4N+A7i48IaDPPLoFhJJLJpkDM7G3jJYkrkknvUSly" +
-                "gfhPRX9Bf8AwqPwL/0Jfh7/AMFUH/xFH/Co/Av/AEJfh7/wVQf/ABFZ+18gP59KK/oL/wCFR+Bf+hL8P" +
-                "f8Agqg/+Irxj9orwD4ct7GytvD9toOjXMRMl3Z6bp1l9skU/wCrb54nKoCr5wBk454IOVTExpQc5LRG9" +
-                "GjPEVFThuz8W6K/db4O/DvwfrPgDTX1HSvCviTVYwyXV5b6XaZ3biQjiNAodVKhhgcg8Cu1/wCFR+Bf+" +
-                "hL8Pf8Agqg/+Iq411JKSW5lKLhJxe6P59KK/Yb9v74d+FNB/ZL8cX2meGNG069iNj5dzaafFFImb63Bw" +
-                "yqCMgkfQmvx5raMuZXJCiiirAKKK/cj9nP4X+DdQ/Z9+Gd1deEtCubqfwzpsks02mwu8jm1jJZmK5JJO" +
-                "STUSlygfhvRX9Bf/Co/Av8A0Jfh7/wVQf8AxFH/AAqPwL/0Jfh7/wAFUH/xFZ+18gP59KK/oL/4VH4F/" +
-                "wChL8Pf+CqD/wCIryH9ob4f+GbbRba00K00DRL1WMtxb2GnWQvZY+ild8TbVBzkgZJwM9QcqmJjSg5yW" +
-                "iNqNKVeoqcN2filRX7m/BH4e+EtZ8BWh1TTPC3iTVomZbi4i0uz8yPJ3LHKI4wA4Urn5QemRXff8Kj8C" +
-                "/8AQl+Hv/BVB/8AEVca6lFSS3InB05OEt0fz6UV+zH7cHw38JaL+yv4/vdO8LaLYXkNtAY7i10+GORCb" +
-                "mIEhlUEcEjj1r8Z62jLmVyAoooqwCiiigAooooAKKKKACiiigAr+gD4F/8AJEvh9/2L2n/+k0dfz/1/Q" +
-                "B8C/wDkiXw+/wCxe0//ANJo6wq7IDuKKKK5gOd+IFzqdr4O1RtHtpLrUmi2QxxMQ2WONwIBPAJPA7V+T" +
-                "Xxw+Kdl4J+IOq+G7+bXItbtWI1O8026+yJLMcssRAVmby1ZU3HHO75RyT+wkzMkTso3MFJA9TX88vjXW" +
-                "PEHjbx54i1CeCa+1W5ubrULxVUlkClpJmPsqhifQCsJYWFafPU7WsaVMZKlh3Qit3e/U/QH9iPWp/Gfi" +
-                "qz8TeFY9QkhW4hstbt5uZEkyw86SQDa4eLbngHMXciv0cr8xP8AgkDqmpHxh8RLEKTpUlhazyN2WZZGV" +
-                "B+KtJ/3zX6d06dCNByUXoy54p4mEOZWcVb1Pm7/AIKKf8me+PP97T//AEvt6/Fiv2n/AOCin/Jnvjz/A" +
-                "HtP/wDS+3r8WK9Cl8JgFFFFbAFfvd+zP/ybl8LP+xW0v/0kjr8Ea/e79mf/AJNy+Fn/AGK2l/8ApJHWF" +
-                "XZAelUUUVzAYnjW61Cz8KapLpVu91qIgYQRxnDbjxkcHpnP4V+T3x++Jtt4C+Iuo+HdWm1qHxBF+81K8" +
-                "025+yrucB4oWOGZ9iN14G5z8uSxr9e6/n4+L2seIfHHxi8ZXc9vNeavcajfXU8KqSyLGZHk/BERvoFrC" +
-                "WGhWnz1NktjSeLlRw7oxXxO9+p9tfsXa/N468W2viPwpHqUk9pcW9prVtMS03322TvKBtcPECpyFP7vH" +
-                "IC1+l1flb/wSJ1bUh8WvGliik6VPoizzHsJUnQR/o8tfqlTp0I0HLlejKliniacFJfCrep4F+3n/wAmk" +
-                "fEX/r1g/wDSqGvxEr9u/wBvP/k0j4i/9esH/pVDX4iV6FL4TEKKKK2AKKKKACiiigAooooAKKKKACv6A" +
-                "PgX/wAkS+H3/Yvaf/6TR1/P/X7MfCP9sz4LaD8KPBemah8QNNtb+y0SytriB0lzHIkCKynCdQQR+FYVU" +
-                "3awH1BRXhP/AA3D8C/+ij6X/wB8Tf8AxFL/AMNxfAv/AKKPpf8A3xN/8RWHK+wHutfln8AfhbYfFz9oj" +
-                "9pi/NpJpFtbadrGnxWscYbyZLp5Y8/UCOT5R6n0r7W/4bi+Bn/RR9LP/AJv/iK8l+Ev7RHwT8BeJviLr" +
-                "Uni/wAK2Fx4qvxeN9he5l8wgOMyboVxktnAHVmpe8tLA6anq3t+Jj/8EkbW2X4IeKrlNPEN3Jrpjkvsc" +
-                "zqsERVM+iFm/wC+zX3RXx3+zt+0h8Dvg78O18ON408M6Zsu5rjbpjXEiSGRt25t0QIb+H6KPpXp/wDw3" +
-                "F8C/wDoo+l/98Tf/EUe9JXasHIqfup3t1MP/gop/wAme+PP97T/AP0vt6/Fiv1Q/bc/ao+FPxK/Zk8Ye" +
-                "HfDPjWw1fW7w2fkWcKSB5Nl5A7YyoHCqx69q/K+uqndLUAooorUAr97v2Z/+TcvhZ/2K2l/+kkdfgjX7" +
-                "FfAb9sX4M+F/gf8PdG1Xx9ptlqen+HtPtLq2kSXdFLHbRq6HCYyGBHHpWNVNpWA+rqK8K/4bh+Bf/RR9" +
-                "L/74m/+Io/4bi+Bf/RR9L/74m/+Irn5X2A91r8x/gr8MdP+MH7dPx1lezk0i0sbXV7UQRxhv3txutGc9" +
-                "ssryvj1NfYf/DcXwM/6KPpf/fE3/wARXlHwv/aL+CXgv4mfEXxXN4x8L2M3ie4gl8yxkuZJJBGHGZN0I" +
-                "Ck7gcLnJLe1L3o6WD2anq3t+Jx//BIqxt4fh78QJRp+y7GrQwtqBHMyLFkRf8AJZv8AtoK+/K+N/wBnn" +
-                "9oz4H/B/wAI6jo7+M/C+mG61Ka/b+yzcukrSYyWDRDBGAoA4wBXqf8Aw3F8C/8Aoo+l/wDfE3/xFHvS1" +
-                "asHIqfup3t1K/7ef/JpHxF/69YP/SqGvxEr9YP2wf2sPhL8QP2bfG/h/wAPeN9P1TWb63hS3tIUlDSEX" +
-                "ETEDKgdFJ/Cvyfrqp3S1AKKKK1AKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKA" +
-                "CiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKA" +
-                "CiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKA" +
-                "CiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKA" +
-                "CiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA/9k=";
+                "vP09fb3+Pn6/9oADAMBAAIRAxEAPwD4aooor0ACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoooo" +
+                "AKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoooo" +
+                "AKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoooo" +
+                "AKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoor92Pgp8LPBd58G/Adx" +
+                "ceENBnnl0Cwkklk0yBmdjbxksSVyST3qJS5QPwnor+gv/hUfgX/AKEvw9/4KoP/AIij/hUfgX/oS/D3/" +
+                "gqg/wDiKz9r5Afz6UV/QX/wqPwL/wBCX4e/8FUH/wARXjH7RXgHw5b2NlbeH7bQdGuYiZLuz03TrL7ZI" +
+                "p/1bfPE5VAVfOAMnHPBByqYmNKDnJaI3o0Z4ioqcN2fi3RX7rfB34d+D9Z8Aaa+o6V4V8SarGGS6vLfS" +
+                "7TO7cSEcRoFDqpUMMDkHgV2v/Co/Av/AEJfh7/wVQf/ABFXGupJSS3MpRcJOL3R/PpRX7Dft/fDvwpoP" +
+                "7Jfji+0zwxo2nXsRsfLubTT4opEzfW4OGVQRkEj6E1+PNbRlzK5IUUUVYBRRRQAUUUUAFFFFABRRRQAU" +
+                "UUUAFFFFABRRRQAUUUUAFFFFABRRRQAV/QB8C/+SJfD7/sXtP8A/SaOv5/6/oA+Bf8AyRL4ff8AYvaf/" +
+                "wCk0dYVdkB3FFFFcwHO/EC51O18Hao2j20l1qTRbIY4mIbLHG4EAngEngdq/Jr44fFOy8E/EHVfDd/Nr" +
+                "kWt2rEaneabdfZElmOWWIgKzN5asqbjjnd8o5J/YSZmSJ2UbmCkgepr+eXxrrHiDxt488RahPBNfarc3" +
+                "N1qF4qqSyBS0kzH2VQxPoBWEsLCtPnqdrWNKmMlSw7oRW7vfqfoD+xHrU/jPxVZ+JvCseoSQrcQ2Wt28" +
+                "3MiSZYedJIBtcPFtzwDmLuRX6OV+Yn/AASB1TUj4w+IliFJ0qSwtZ5G7LMsjKg/FWk/75r9O6dOhGg5K" +
+                "L0Zc8U8TCHMrOKt6nzd/wAFFP8Akz3x5/vaf/6X29fixX7T/wDBRT/kz3x5/vaf/wCl9vX4sV6FL4TAK" +
+                "KKK2AKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACv6APgX/yRL4ff9i9p/8A6" +
+                "TR1/P8A1+zHwj/bM+C2g/CjwXpmofEDTbW/stEsra4gdJcxyJAispwnUEEfhWFVN2sB9QUV4T/w3D8C/" +
+                "wDoo+l/98Tf/EUv/DcXwL/6KPpf/fE3/wARWHK+wHutfln8AfhbYfFz9oj9pi/NpJpFtbadrGnxWscYb" +
+                "yZLp5Y8/UCOT5R6n0r7W/4bi+Bn/RR9LP8AwCb/AOIryX4S/tEfBPwF4m+IutSeL/CthceKr8XjfYXuZ" +
+                "fMIDjMm6FcZLZwB1ZqXvLSwOmp6t7fiY/8AwSRtbZfgh4quU08Q3cmumOS+xzOqwRFUz6IWb/vs190V8" +
+                "d/s7ftIfA74O/DtfDjeNPDOmbLua426Y1xIkhkbdubdECG/h+ij6V6f/wANxfAv/oo+l/8AfE3/AMRR7" +
+                "0ldqwcip+6ne3Uw/wDgop/yZ748/wB7T/8A0vt6/Fiv1Q/bc/ao+FPxK/Zk8YeHfDPjWw1fW7w2fkWcK" +
+                "SB5Nl5A7YyoHCqx69q/K+uqndLUAooorUAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiii" +
+                "gAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiii" +
+                "gAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiii" +
+                "gAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiii" +
+                "gAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiii" +
+                "gAooooAKKKKACiiigD/2Q==";
 
             Stream mem = new MemoryStream(Convert.FromBase64String(base64), false);
             try
@@ -252,12 +220,6 @@ namespace OpenXmlSample
             SlideId slideId = new SlideId();
             slideId.Id = 256u;
             slideId.RelationshipId = "rId2";
-
-            slideIdList.Append(slideId);
-
-            slideId = new SlideId();
-            slideId.Id = 257u;
-            slideId.RelationshipId = "rId3";
 
             slideIdList.Append(slideId);
 
@@ -675,6 +637,69 @@ namespace OpenXmlSample
             part.Presentation = presentation;
         }
         
+        private void GeneratePresentationPropertiesPart(ref PresentationPropertiesPart part)
+        {
+            PresentationProperties presentationProperties = new PresentationProperties();
+
+            presentationProperties.AddNamespaceDeclaration("a", "http://schemas.openxmlformats.org/drawingml/2006/main");
+            presentationProperties.AddNamespaceDeclaration("r", "http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+            presentationProperties.AddNamespaceDeclaration("p", "http://schemas.openxmlformats.org/presentationml/2006/main");
+
+            ColorMostRecentlyUsed colorMostRecentlyUsed = new ColorMostRecentlyUsed();
+
+            A.RgbColorModelHex aRgbColorModelHex = new A.RgbColorModelHex();
+            aRgbColorModelHex.Val = "2A2835";
+
+            colorMostRecentlyUsed.Append(aRgbColorModelHex);
+
+            presentationProperties.Append(colorMostRecentlyUsed);
+
+            PresentationPropertiesExtensionList presentationPropertiesExtensionList = new PresentationPropertiesExtensionList();
+
+            PresentationPropertiesExtension presentationPropertiesExtension = new PresentationPropertiesExtension();
+            presentationPropertiesExtension.Uri = "{E76CE94A-603C-4142-B9EB-6D1370010A27}";
+
+            P14.DiscardImageEditData p14DiscardImageEditData = new P14.DiscardImageEditData();
+
+            p14DiscardImageEditData.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
+
+            p14DiscardImageEditData.Val = false;
+
+            presentationPropertiesExtension.Append(p14DiscardImageEditData);
+
+            presentationPropertiesExtensionList.Append(presentationPropertiesExtension);
+
+            presentationPropertiesExtension = new PresentationPropertiesExtension();
+            presentationPropertiesExtension.Uri = "{D31A062A-798A-4329-ABDD-BBA856620510}";
+
+            P14.DefaultImageDpi p14DefaultImageDpi = new P14.DefaultImageDpi();
+
+            p14DefaultImageDpi.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
+
+            p14DefaultImageDpi.Val = 32767u;
+
+            presentationPropertiesExtension.Append(p14DefaultImageDpi);
+
+            presentationPropertiesExtensionList.Append(presentationPropertiesExtension);
+
+            presentationPropertiesExtension = new PresentationPropertiesExtension();
+            presentationPropertiesExtension.Uri = "{FD5EFAAD-0ECE-453E-9831-46B23BE46B34}";
+
+            P15.ChartTrackingReferenceBased p15ChartTrackingReferenceBased = new P15.ChartTrackingReferenceBased();
+
+            p15ChartTrackingReferenceBased.AddNamespaceDeclaration("p15", "http://schemas.microsoft.com/office/powerpoint/2012/main");
+
+            p15ChartTrackingReferenceBased.Val = true;
+
+            presentationPropertiesExtension.Append(p15ChartTrackingReferenceBased);
+
+            presentationPropertiesExtensionList.Append(presentationPropertiesExtension);
+
+            presentationProperties.Append(presentationPropertiesExtensionList);
+
+            part.PresentationProperties = presentationProperties;
+        }
+        
         private void GenerateSlidePart(ref SlidePart part)
         {
             Slide slide = new Slide();
@@ -777,13 +802,13 @@ namespace OpenXmlSample
             A.NonVisualDrawingPropertiesExtension aNonVisualDrawingPropertiesExtension = new A.NonVisualDrawingPropertiesExtension();
             aNonVisualDrawingPropertiesExtension.Uri = "{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}";
 
-            CreationId creationId = new CreationId();
+            A16.CreationId a16CreationId = new A16.CreationId();
 
-            creationId.AddNamespaceDeclaration("a16", "http://schemas.microsoft.com/office/drawing/2014/main");
+            a16CreationId.AddNamespaceDeclaration("a16", "http://schemas.microsoft.com/office/drawing/2014/main");
 
-            creationId.Id = "{4B2B3C5C-8887-469C-892D-47D767B00D06}";
+            a16CreationId.Id = "{4B2B3C5C-8887-469C-892D-47D767B00D06}";
 
-            aNonVisualDrawingPropertiesExtension.Append(creationId);
+            aNonVisualDrawingPropertiesExtension.Append(a16CreationId);
 
             aNonVisualDrawingPropertiesExtensionList.Append(aNonVisualDrawingPropertiesExtension);
 
@@ -880,235 +905,6 @@ namespace OpenXmlSample
 
             shapeTree.Append(picture);
 
-            picture = new Picture();
-
-            nonVisualPictureProperties = new NonVisualPictureProperties();
-
-            nonVisualDrawingProperties = new NonVisualDrawingProperties();
-            nonVisualDrawingProperties.Id = 3u;
-            nonVisualDrawingProperties.Name = "601_MB_Lateral_Lunge_to_a_Front_Press-08656";
-
-            aHyperlinkOnClick = new A.HyperlinkOnClick();
-            aHyperlinkOnClick.Id = "";
-            aHyperlinkOnClick.Action = "ppaction://media";
-
-            nonVisualDrawingProperties.Append(aHyperlinkOnClick);
-
-            aNonVisualDrawingPropertiesExtensionList = new A.NonVisualDrawingPropertiesExtensionList();
-
-            aNonVisualDrawingPropertiesExtension = new A.NonVisualDrawingPropertiesExtension();
-            aNonVisualDrawingPropertiesExtension.Uri = "{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}";
-
-            creationId = new CreationId();
-
-            creationId.AddNamespaceDeclaration("a16", "http://schemas.microsoft.com/office/drawing/2014/main");
-
-            creationId.Id = "{A1BDB178-79BC-4953-BF45-2CF5F8214D78}";
-
-            aNonVisualDrawingPropertiesExtension.Append(creationId);
-
-            aNonVisualDrawingPropertiesExtensionList.Append(aNonVisualDrawingPropertiesExtension);
-
-            nonVisualDrawingProperties.Append(aNonVisualDrawingPropertiesExtensionList);
-
-            nonVisualPictureProperties.Append(nonVisualDrawingProperties);
-
-            nonVisualPictureDrawingProperties = new NonVisualPictureDrawingProperties();
-
-            aPictureLocks = new A.PictureLocks();
-
-            nonVisualPictureDrawingProperties.Append(aPictureLocks);
-
-            nonVisualPictureProperties.Append(nonVisualPictureDrawingProperties);
-
-            applicationNonVisualDrawingProperties = new ApplicationNonVisualDrawingProperties();
-
-            aVideoFromFile = new A.VideoFromFile();
-            aVideoFromFile.Link = "rId1";
-
-            applicationNonVisualDrawingProperties.Append(aVideoFromFile);
-
-            applicationNonVisualDrawingPropertiesExtensionList = new ApplicationNonVisualDrawingPropertiesExtensionList();
-
-            applicationNonVisualDrawingPropertiesExtension = new ApplicationNonVisualDrawingPropertiesExtension();
-            applicationNonVisualDrawingPropertiesExtension.Uri = "{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}";
-
-            p14Media = new P14.Media();
-
-            p14Media.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
-
-            p14Media.Embed = "rId2";
-
-            p14MediaTrim = new P14.MediaTrim();
-            p14MediaTrim.End = "4898.9999";
-
-            p14Media.Append(p14MediaTrim);
-
-            applicationNonVisualDrawingPropertiesExtension.Append(p14Media);
-
-            applicationNonVisualDrawingPropertiesExtensionList.Append(applicationNonVisualDrawingPropertiesExtension);
-
-            applicationNonVisualDrawingProperties.Append(applicationNonVisualDrawingPropertiesExtensionList);
-
-            nonVisualPictureProperties.Append(applicationNonVisualDrawingProperties);
-
-            picture.Append(nonVisualPictureProperties);
-
-            blipFill = new BlipFill();
-
-            aBlip = new A.Blip();
-            aBlip.Embed = "rId4";
-
-            blipFill.Append(aBlip);
-
-            aStretch = new A.Stretch();
-
-            aFillRectangle = new A.FillRectangle();
-
-            aStretch.Append(aFillRectangle);
-
-            blipFill.Append(aStretch);
-
-            picture.Append(blipFill);
-
-            shapeProperties = new ShapeProperties();
-
-            aTransform2D = new A.Transform2D();
-
-            aOffset = new A.Offset();
-            aOffset.X = 4164759;
-            aOffset.Y = 1709928;
-
-            aTransform2D.Append(aOffset);
-
-            aExtents = new A.Extents();
-            aExtents.Cx = 1856232;
-            aExtents.Cy = 1152144;
-
-            aTransform2D.Append(aExtents);
-
-            shapeProperties.Append(aTransform2D);
-
-            aPresetGeometry = new A.PresetGeometry();
-            aPresetGeometry.Preset = A.ShapeTypeValues.Rectangle;
-
-            aAdjustValueList = new A.AdjustValueList();
-
-            aPresetGeometry.Append(aAdjustValueList);
-
-            shapeProperties.Append(aPresetGeometry);
-
-            picture.Append(shapeProperties);
-
-            shapeTree.Append(picture);
-
-            picture = new Picture();
-
-            nonVisualPictureProperties = new NonVisualPictureProperties();
-
-            nonVisualDrawingProperties = new NonVisualDrawingProperties();
-            nonVisualDrawingProperties.Id = 4u;
-            nonVisualDrawingProperties.Name = "Picture 3";
-
-            aNonVisualDrawingPropertiesExtensionList = new A.NonVisualDrawingPropertiesExtensionList();
-
-            aNonVisualDrawingPropertiesExtension = new A.NonVisualDrawingPropertiesExtension();
-            aNonVisualDrawingPropertiesExtension.Uri = "{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}";
-
-            creationId = new CreationId();
-
-            creationId.AddNamespaceDeclaration("a16", "http://schemas.microsoft.com/office/drawing/2014/main");
-
-            creationId.Id = "{13680243-08E1-47A0-813D-BD6DFB56BA5D}";
-
-            aNonVisualDrawingPropertiesExtension.Append(creationId);
-
-            aNonVisualDrawingPropertiesExtensionList.Append(aNonVisualDrawingPropertiesExtension);
-
-            nonVisualDrawingProperties.Append(aNonVisualDrawingPropertiesExtensionList);
-
-            nonVisualPictureProperties.Append(nonVisualDrawingProperties);
-
-            nonVisualPictureDrawingProperties = new NonVisualPictureDrawingProperties();
-
-            aPictureLocks = new A.PictureLocks();
-            aPictureLocks.NoChangeAspect = true;
-
-            nonVisualPictureDrawingProperties.Append(aPictureLocks);
-
-            nonVisualPictureProperties.Append(nonVisualPictureDrawingProperties);
-
-            applicationNonVisualDrawingProperties = new ApplicationNonVisualDrawingProperties();
-
-            nonVisualPictureProperties.Append(applicationNonVisualDrawingProperties);
-
-            picture.Append(nonVisualPictureProperties);
-
-            blipFill = new BlipFill();
-
-            aBlip = new A.Blip();
-            aBlip.Embed = "rId5";
-
-            A.BlipExtensionList aBlipExtensionList = new A.BlipExtensionList();
-
-            A.BlipExtension aBlipExtension = new A.BlipExtension();
-            aBlipExtension.Uri = "{28A0092B-C50C-407E-A947-70E740481C1C}";
-
-            A14.UseLocalDpi a14UseLocalDpi = new A14.UseLocalDpi();
-
-            a14UseLocalDpi.AddNamespaceDeclaration("a14", "http://schemas.microsoft.com/office/drawing/2010/main");
-
-            a14UseLocalDpi.Val = false;
-
-            aBlipExtension.Append(a14UseLocalDpi);
-
-            aBlipExtensionList.Append(aBlipExtension);
-
-            aBlip.Append(aBlipExtensionList);
-
-            blipFill.Append(aBlip);
-
-            aStretch = new A.Stretch();
-
-            aFillRectangle = new A.FillRectangle();
-
-            aStretch.Append(aFillRectangle);
-
-            blipFill.Append(aStretch);
-
-            picture.Append(blipFill);
-
-            shapeProperties = new ShapeProperties();
-
-            aTransform2D = new A.Transform2D();
-
-            aOffset = new A.Offset();
-            aOffset.X = 3733819;
-            aOffset.Y = 60984;
-
-            aTransform2D.Append(aOffset);
-
-            aExtents = new A.Extents();
-            aExtents.Cx = 304762;
-            aExtents.Cy = 380952;
-
-            aTransform2D.Append(aExtents);
-
-            shapeProperties.Append(aTransform2D);
-
-            aPresetGeometry = new A.PresetGeometry();
-            aPresetGeometry.Preset = A.ShapeTypeValues.Rectangle;
-
-            aAdjustValueList = new A.AdjustValueList();
-
-            aPresetGeometry.Append(aAdjustValueList);
-
-            shapeProperties.Append(aPresetGeometry);
-
-            picture.Append(shapeProperties);
-
-            shapeTree.Append(picture);
-
             commonSlideData.Append(shapeTree);
 
             CommonSlideDataExtensionList commonSlideDataExtensionList = new CommonSlideDataExtensionList();
@@ -1120,7 +916,7 @@ namespace OpenXmlSample
 
             p14CreationId.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
 
-            p14CreationId.Val = 2678478121u;
+            p14CreationId.Val = 1718767114u;
 
             commonSlideDataExtension.Append(p14CreationId);
 
@@ -1261,59 +1057,6 @@ namespace OpenXmlSample
 
             childTimeNodeList3.Append(parallelTimeNode3);
 
-            parallelTimeNode3 = new ParallelTimeNode();
-
-            commonTimeNode5 = new CommonTimeNode();
-            commonTimeNode5.Id = 7u;
-            commonTimeNode5.PresetId = 1;
-            commonTimeNode5.PresetSubtype = 0;
-            commonTimeNode5.PresetClass = TimeNodePresetClassValues.MediaCall;
-            commonTimeNode5.Fill = TimeNodeFillValues.Hold;
-            commonTimeNode5.NodeType = TimeNodeValues.WithEffect;
-
-            startConditionList = new StartConditionList();
-
-            condition = new Condition();
-            condition.Delay = "0";
-
-            startConditionList.Append(condition);
-
-            commonTimeNode5.Append(startConditionList);
-
-            childTimeNodeList4 = new ChildTimeNodeList();
-
-            command = new Command();
-            command.CommandName = "playFrom(0.0)";
-            command.Type = CommandValues.Call;
-
-            commonBehavior = new CommonBehavior();
-
-            commonTimeNode4 = new CommonTimeNode();
-            commonTimeNode4.Id = 8u;
-            commonTimeNode4.Duration = "5000";
-            commonTimeNode4.Fill = TimeNodeFillValues.Hold;
-
-            commonBehavior.Append(commonTimeNode4);
-
-            targetElement = new TargetElement();
-
-            shapeTarget = new ShapeTarget();
-            shapeTarget.ShapeId = "3";
-
-            targetElement.Append(shapeTarget);
-
-            commonBehavior.Append(targetElement);
-
-            command.Append(commonBehavior);
-
-            childTimeNodeList4.Append(command);
-
-            commonTimeNode5.Append(childTimeNodeList4);
-
-            parallelTimeNode3.Append(commonTimeNode5);
-
-            childTimeNodeList3.Append(parallelTimeNode3);
-
             commonTimeNode3.Append(childTimeNodeList3);
 
             parallelTimeNode2.Append(commonTimeNode3);
@@ -1374,7 +1117,7 @@ namespace OpenXmlSample
             commonMediaNode.Volume = 80000;
 
             commonTimeNode5 = new CommonTimeNode();
-            commonTimeNode5.Id = 9u;
+            commonTimeNode5.Id = 7u;
             commonTimeNode5.RepeatCount = "indefinite";
             commonTimeNode5.Display = false;
             commonTimeNode5.Fill = TimeNodeFillValues.Hold;
@@ -1394,41 +1137,6 @@ namespace OpenXmlSample
 
             shapeTarget = new ShapeTarget();
             shapeTarget.ShapeId = "2";
-
-            targetElement.Append(shapeTarget);
-
-            commonMediaNode.Append(targetElement);
-
-            video.Append(commonMediaNode);
-
-            childTimeNodeList.Append(video);
-
-            video = new Video();
-
-            commonMediaNode = new CommonMediaNode();
-            commonMediaNode.Volume = 80000;
-
-            commonTimeNode5 = new CommonTimeNode();
-            commonTimeNode5.Id = 10u;
-            commonTimeNode5.RepeatCount = "indefinite";
-            commonTimeNode5.Display = false;
-            commonTimeNode5.Fill = TimeNodeFillValues.Hold;
-
-            startConditionList = new StartConditionList();
-
-            condition = new Condition();
-            condition.Delay = "indefinite";
-
-            startConditionList.Append(condition);
-
-            commonTimeNode5.Append(startConditionList);
-
-            commonMediaNode.Append(commonTimeNode5);
-
-            targetElement = new TargetElement();
-
-            shapeTarget = new ShapeTarget();
-            shapeTarget.ShapeId = "3";
 
             targetElement.Append(shapeTarget);
 
@@ -1906,7 +1614,7 @@ namespace OpenXmlSample
 
             aField.Append(aRunProperties);
 
-            aText = new A.Text("3/7/2022");
+            aText = new A.Text("3/10/2022");
 
             aField.Append(aText);
 
@@ -2588,7 +2296,7 @@ namespace OpenXmlSample
 
             aField.Append(aRunProperties);
 
-            aText = new A.Text("3/7/2022");
+            aText = new A.Text("3/10/2022");
 
             aField.Append(aText);
 
@@ -4781,7 +4489,7 @@ namespace OpenXmlSample
 
             aField.Append(aRunProperties);
 
-            aText = new A.Text("3/7/2022");
+            aText = new A.Text("3/10/2022");
 
             aField.Append(aText);
 
@@ -5535,7 +5243,7 @@ namespace OpenXmlSample
 
             aField.Append(aRunProperties);
 
-            aText = new A.Text("3/7/2022");
+            aText = new A.Text("3/10/2022");
 
             aField.Append(aText);
 
@@ -5844,7 +5552,7 @@ namespace OpenXmlSample
 
             aField.Append(aRunProperties);
 
-            A.Text aText = new A.Text("3/7/2022");
+            A.Text aText = new A.Text("3/10/2022");
 
             aField.Append(aText);
 
@@ -7030,15 +6738,15 @@ namespace OpenXmlSample
             A.OfficeStyleSheetExtension aOfficeStyleSheetExtension = new A.OfficeStyleSheetExtension();
             aOfficeStyleSheetExtension.Uri = "{05A4C25C-085E-4340-85A3-A5531E510DB2}";
 
-            THM15.ThemeFamily thm15ThemeFamily = new THM15.ThemeFamily();
+            ThemeFamily themeFamily = new ThemeFamily();
 
-            thm15ThemeFamily.AddNamespaceDeclaration("thm15", "http://schemas.microsoft.com/office/thememl/2012/main");
+            themeFamily.AddNamespaceDeclaration("thm15", "http://schemas.microsoft.com/office/thememl/2012/main");
 
-            thm15ThemeFamily.Name = "Office Theme";
-            thm15ThemeFamily.Id = "{62F939B6-93AF-4DB8-9C6B-D6C7DFDC589F}";
-            thm15ThemeFamily.Vid = "{4A3C46E8-61CC-4603-A589-7422A47A8E4A}";
+            themeFamily.Name = "Office Theme";
+            themeFamily.Id = "{62F939B6-93AF-4DB8-9C6B-D6C7DFDC589F}";
+            themeFamily.Vid = "{4A3C46E8-61CC-4603-A589-7422A47A8E4A}";
 
-            aOfficeStyleSheetExtension.Append(thm15ThemeFamily);
+            aOfficeStyleSheetExtension.Append(themeFamily);
 
             aOfficeStyleSheetExtensionList.Append(aOfficeStyleSheetExtension);
 
@@ -7407,7 +7115,7 @@ namespace OpenXmlSample
 
             aField.Append(aRunProperties);
 
-            aText = new A.Text("3/7/2022");
+            aText = new A.Text("3/10/2022");
 
             aField.Append(aText);
 
@@ -7787,7 +7495,7 @@ namespace OpenXmlSample
 
             aField.Append(aRunProperties);
 
-            aText = new A.Text("3/7/2022");
+            aText = new A.Text("3/10/2022");
 
             aField.Append(aText);
 
@@ -8368,7 +8076,7 @@ namespace OpenXmlSample
 
             aField.Append(aRunProperties);
 
-            aText = new A.Text("3/7/2022");
+            aText = new A.Text("3/10/2022");
 
             aField.Append(aText);
 
@@ -9591,7 +9299,7 @@ namespace OpenXmlSample
 
             aField.Append(aRunProperties);
 
-            aText = new A.Text("3/7/2022");
+            aText = new A.Text("3/10/2022");
 
             aField.Append(aText);
 
@@ -10138,7 +9846,7 @@ namespace OpenXmlSample
 
             aField.Append(aRunProperties);
 
-            aText = new A.Text("3/7/2022");
+            aText = new A.Text("3/10/2022");
 
             aField.Append(aText);
 
@@ -10880,7 +10588,7 @@ namespace OpenXmlSample
 
             aField.Append(aRunProperties);
 
-            aText = new A.Text("3/7/2022");
+            aText = new A.Text("3/10/2022");
 
             aField.Append(aText);
 
@@ -11734,7 +11442,7 @@ namespace OpenXmlSample
 
             aField.Append(aRunProperties);
 
-            aText = new A.Text("3/7/2022");
+            aText = new A.Text("3/10/2022");
 
             aField.Append(aText);
 
@@ -11919,21 +11627,6 @@ namespace OpenXmlSample
         }
         
         private void GenerateImagePart(ref ImagePart part)
-        {
-            string base64 = @"iVBORw0KGgoAAAANSUhEUgAAABgAAAAeCAYAAAA2Lt7lAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAK7SURBVHgBrVZRTttAEH27jlo+2tQRpVK/MCcovUE4AfQEwAkw6gGAE+CcADgB4QTQEzQ9Af6r1IKykfrRVmS3bxI7WSzbOCVPMmGz63mzM29mor7HYfQS7swBXQAGcP2/0CfvE5NiCdCecUEIqL0XcNdCjCVAe8Z9TG6FZRDwScs2hHj4eWUdzydQvarNh/HKBhbEbRyGP+NX3RnBamISC3VSftxuYgFI3tpwXzWC6/u4fTohkD9riTkmyZaDu+BykL8QQO1iAbTwEPEjmq5UPORtVNlBbkRj2GM1IXDnuWynV9fdzDPD7/u+nO/i1zsK+jJf6+BPpFCDu7idkOQgW7JGRMZFzB1gWM5E5tlGupqMNmoJ5CYW7hZPI6UhQ+VFDuqQn2mLoe4kxrTq3hpTqgUPDHPVU7M82Z1pGMUwV3CHa8no3H+hlkDBHfleagph9XEL6d/HIcncaZUNXbWRaTmaH1RbnZL+JDLP1Ceq225MwK1ZDfD6N52a5uegz7NzXZFmIwLleU8Pv6AGrKOb2SL4/aYRATxJqlJ5NkMlgfMqmvH/gBr8iMN5SxmvjBoRcGvgkXUfGSkggD3IzkmuTCOCLK5eX3KXZUNoeNg+yKuXuboq7tfWgYM98XpLJJOO7aBvYa9YYJGG3rVuPrBIYIo2aluF1IK0XjyN3DArfbwv//xCa7DBcNWpiGEJjjwDpuyMxJ0i+MhHGpsRh+SRuVB5A/+XhgwjmRfy/V0c7jBsm3xpnc83SyH4NcD9PeXN8kftehoOvc3Ydml4M/fubTLaQkMUQ8pbdSZJHsbtI3p6nBn1YC+wAFqMu50mOmTb7olktVwrN16EQ5BiAUwMMh80/ultYuIJaaElFwjKE/sESQrvp5CoKKo4m75LzADPhGaWb8qMS//HEkACtU+SfrbmXHW9quHyP/gH9fQbj1vujyIAAAAASUVORK5CYII=";
-
-            Stream mem = new MemoryStream(Convert.FromBase64String(base64), false);
-            try
-            {
-                part.FeedData(mem);
-            }
-            finally
-            {
-                mem.Dispose();
-            }
-        }
-        
-        private void GenerateImagePart1(ref ImagePart part)
         {
             string base64 = "iVBORw0KGgoAAAANSUhEUgAABDgAAAQ4CAYAAADsEGyPAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8Y" +
                 "QUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAP+lSURBVHhe7P11dJzpeqcL7/PNmZwzM5kkk2Qn2dC7yW0GS" +
@@ -17055,782 +16748,6 @@ namespace OpenXmlSample
             part.TableStyleList = aTableStyleList;
         }
         
-        private void GenerateSlidePart1(ref SlidePart part)
-        {
-            Slide slide = new Slide();
-
-            slide.AddNamespaceDeclaration("a", "http://schemas.openxmlformats.org/drawingml/2006/main");
-            slide.AddNamespaceDeclaration("r", "http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-            slide.AddNamespaceDeclaration("p", "http://schemas.openxmlformats.org/presentationml/2006/main");
-
-            CommonSlideData commonSlideData = new CommonSlideData();
-
-            Background background = new Background();
-
-            BackgroundProperties backgroundProperties = new BackgroundProperties();
-
-            A.SolidFill aSolidFill = new A.SolidFill();
-
-            A.RgbColorModelHex aRgbColorModelHex = new A.RgbColorModelHex();
-            aRgbColorModelHex.Val = "2A2835";
-
-            aSolidFill.Append(aRgbColorModelHex);
-
-            backgroundProperties.Append(aSolidFill);
-
-            A.EffectList aEffectList = new A.EffectList();
-
-            backgroundProperties.Append(aEffectList);
-
-            background.Append(backgroundProperties);
-
-            commonSlideData.Append(background);
-
-            ShapeTree shapeTree = new ShapeTree();
-
-            NonVisualGroupShapeProperties nonVisualGroupShapeProperties = new NonVisualGroupShapeProperties();
-
-            NonVisualDrawingProperties nonVisualDrawingProperties = new NonVisualDrawingProperties();
-            nonVisualDrawingProperties.Id = 1u;
-            nonVisualDrawingProperties.Name = "";
-
-            nonVisualGroupShapeProperties.Append(nonVisualDrawingProperties);
-
-            NonVisualGroupShapeDrawingProperties nonVisualGroupShapeDrawingProperties = new NonVisualGroupShapeDrawingProperties();
-
-            nonVisualGroupShapeProperties.Append(nonVisualGroupShapeDrawingProperties);
-
-            ApplicationNonVisualDrawingProperties applicationNonVisualDrawingProperties = new ApplicationNonVisualDrawingProperties();
-
-            nonVisualGroupShapeProperties.Append(applicationNonVisualDrawingProperties);
-
-            shapeTree.Append(nonVisualGroupShapeProperties);
-
-            GroupShapeProperties groupShapeProperties = new GroupShapeProperties();
-
-            A.TransformGroup aTransformGroup = new A.TransformGroup();
-
-            A.Offset aOffset = new A.Offset();
-            aOffset.X = 0;
-            aOffset.Y = 0;
-
-            aTransformGroup.Append(aOffset);
-
-            A.Extents aExtents = new A.Extents();
-            aExtents.Cx = 0;
-            aExtents.Cy = 0;
-
-            aTransformGroup.Append(aExtents);
-
-            A.ChildOffset aChildOffset = new A.ChildOffset();
-            aChildOffset.X = 0;
-            aChildOffset.Y = 0;
-
-            aTransformGroup.Append(aChildOffset);
-
-            A.ChildExtents aChildExtents = new A.ChildExtents();
-            aChildExtents.Cx = 0;
-            aChildExtents.Cy = 0;
-
-            aTransformGroup.Append(aChildExtents);
-
-            groupShapeProperties.Append(aTransformGroup);
-
-            shapeTree.Append(groupShapeProperties);
-
-            Picture picture = new Picture();
-
-            NonVisualPictureProperties nonVisualPictureProperties = new NonVisualPictureProperties();
-
-            nonVisualDrawingProperties = new NonVisualDrawingProperties();
-            nonVisualDrawingProperties.Id = 2u;
-            nonVisualDrawingProperties.Name = "601_MB_Lateral_Lunge_to_a_Front_Press-08656";
-
-            A.HyperlinkOnClick aHyperlinkOnClick = new A.HyperlinkOnClick();
-            aHyperlinkOnClick.Id = "";
-            aHyperlinkOnClick.Action = "ppaction://media";
-
-            nonVisualDrawingProperties.Append(aHyperlinkOnClick);
-
-            A.NonVisualDrawingPropertiesExtensionList aNonVisualDrawingPropertiesExtensionList = new A.NonVisualDrawingPropertiesExtensionList();
-
-            A.NonVisualDrawingPropertiesExtension aNonVisualDrawingPropertiesExtension = new A.NonVisualDrawingPropertiesExtension();
-            aNonVisualDrawingPropertiesExtension.Uri = "{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}";
-
-            CreationId creationId = new CreationId();
-
-            creationId.AddNamespaceDeclaration("a16", "http://schemas.microsoft.com/office/drawing/2014/main");
-
-            creationId.Id = "{4B2B3C5C-8887-469C-892D-47D767B00D06}";
-
-            aNonVisualDrawingPropertiesExtension.Append(creationId);
-
-            aNonVisualDrawingPropertiesExtensionList.Append(aNonVisualDrawingPropertiesExtension);
-
-            nonVisualDrawingProperties.Append(aNonVisualDrawingPropertiesExtensionList);
-
-            nonVisualPictureProperties.Append(nonVisualDrawingProperties);
-
-            NonVisualPictureDrawingProperties nonVisualPictureDrawingProperties = new NonVisualPictureDrawingProperties();
-
-            A.PictureLocks aPictureLocks = new A.PictureLocks();
-
-            nonVisualPictureDrawingProperties.Append(aPictureLocks);
-
-            nonVisualPictureProperties.Append(nonVisualPictureDrawingProperties);
-
-            applicationNonVisualDrawingProperties = new ApplicationNonVisualDrawingProperties();
-
-            A.VideoFromFile aVideoFromFile = new A.VideoFromFile();
-            aVideoFromFile.Link = "rId1";
-
-            applicationNonVisualDrawingProperties.Append(aVideoFromFile);
-
-            ApplicationNonVisualDrawingPropertiesExtensionList applicationNonVisualDrawingPropertiesExtensionList = new ApplicationNonVisualDrawingPropertiesExtensionList();
-
-            ApplicationNonVisualDrawingPropertiesExtension applicationNonVisualDrawingPropertiesExtension = new ApplicationNonVisualDrawingPropertiesExtension();
-            applicationNonVisualDrawingPropertiesExtension.Uri = "{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}";
-
-            P14.Media p14Media = new P14.Media();
-
-            p14Media.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
-
-            p14Media.Embed = "rId2";
-
-            P14.MediaTrim p14MediaTrim = new P14.MediaTrim();
-            p14MediaTrim.End = "4898.9999";
-
-            p14Media.Append(p14MediaTrim);
-
-            applicationNonVisualDrawingPropertiesExtension.Append(p14Media);
-
-            applicationNonVisualDrawingPropertiesExtensionList.Append(applicationNonVisualDrawingPropertiesExtension);
-
-            applicationNonVisualDrawingProperties.Append(applicationNonVisualDrawingPropertiesExtensionList);
-
-            nonVisualPictureProperties.Append(applicationNonVisualDrawingProperties);
-
-            picture.Append(nonVisualPictureProperties);
-
-            BlipFill blipFill = new BlipFill();
-
-            A.Blip aBlip = new A.Blip();
-            aBlip.Embed = "rId4";
-
-            blipFill.Append(aBlip);
-
-            A.Stretch aStretch = new A.Stretch();
-
-            A.FillRectangle aFillRectangle = new A.FillRectangle();
-
-            aStretch.Append(aFillRectangle);
-
-            blipFill.Append(aStretch);
-
-            picture.Append(blipFill);
-
-            ShapeProperties shapeProperties = new ShapeProperties();
-
-            A.Transform2D aTransform2D = new A.Transform2D();
-
-            aOffset = new A.Offset();
-            aOffset.X = 1240340;
-            aOffset.Y = 1709928;
-
-            aTransform2D.Append(aOffset);
-
-            aExtents = new A.Extents();
-            aExtents.Cx = 1856232;
-            aExtents.Cy = 1152144;
-
-            aTransform2D.Append(aExtents);
-
-            shapeProperties.Append(aTransform2D);
-
-            A.PresetGeometry aPresetGeometry = new A.PresetGeometry();
-            aPresetGeometry.Preset = A.ShapeTypeValues.Rectangle;
-
-            A.AdjustValueList aAdjustValueList = new A.AdjustValueList();
-
-            aPresetGeometry.Append(aAdjustValueList);
-
-            shapeProperties.Append(aPresetGeometry);
-
-            picture.Append(shapeProperties);
-
-            shapeTree.Append(picture);
-
-            picture = new Picture();
-
-            nonVisualPictureProperties = new NonVisualPictureProperties();
-
-            nonVisualDrawingProperties = new NonVisualDrawingProperties();
-            nonVisualDrawingProperties.Id = 3u;
-            nonVisualDrawingProperties.Name = "601_MB_Lateral_Lunge_to_a_Front_Press-08656";
-
-            aHyperlinkOnClick = new A.HyperlinkOnClick();
-            aHyperlinkOnClick.Id = "";
-            aHyperlinkOnClick.Action = "ppaction://media";
-
-            nonVisualDrawingProperties.Append(aHyperlinkOnClick);
-
-            aNonVisualDrawingPropertiesExtensionList = new A.NonVisualDrawingPropertiesExtensionList();
-
-            aNonVisualDrawingPropertiesExtension = new A.NonVisualDrawingPropertiesExtension();
-            aNonVisualDrawingPropertiesExtension.Uri = "{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}";
-
-            creationId = new CreationId();
-
-            creationId.AddNamespaceDeclaration("a16", "http://schemas.microsoft.com/office/drawing/2014/main");
-
-            creationId.Id = "{A1BDB178-79BC-4953-BF45-2CF5F8214D78}";
-
-            aNonVisualDrawingPropertiesExtension.Append(creationId);
-
-            aNonVisualDrawingPropertiesExtensionList.Append(aNonVisualDrawingPropertiesExtension);
-
-            nonVisualDrawingProperties.Append(aNonVisualDrawingPropertiesExtensionList);
-
-            nonVisualPictureProperties.Append(nonVisualDrawingProperties);
-
-            nonVisualPictureDrawingProperties = new NonVisualPictureDrawingProperties();
-
-            aPictureLocks = new A.PictureLocks();
-
-            nonVisualPictureDrawingProperties.Append(aPictureLocks);
-
-            nonVisualPictureProperties.Append(nonVisualPictureDrawingProperties);
-
-            applicationNonVisualDrawingProperties = new ApplicationNonVisualDrawingProperties();
-
-            aVideoFromFile = new A.VideoFromFile();
-            aVideoFromFile.Link = "rId1";
-
-            applicationNonVisualDrawingProperties.Append(aVideoFromFile);
-
-            applicationNonVisualDrawingPropertiesExtensionList = new ApplicationNonVisualDrawingPropertiesExtensionList();
-
-            applicationNonVisualDrawingPropertiesExtension = new ApplicationNonVisualDrawingPropertiesExtension();
-            applicationNonVisualDrawingPropertiesExtension.Uri = "{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}";
-
-            p14Media = new P14.Media();
-
-            p14Media.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
-
-            p14Media.Embed = "rId2";
-
-            p14MediaTrim = new P14.MediaTrim();
-            p14MediaTrim.End = "4898.9999";
-
-            p14Media.Append(p14MediaTrim);
-
-            applicationNonVisualDrawingPropertiesExtension.Append(p14Media);
-
-            applicationNonVisualDrawingPropertiesExtensionList.Append(applicationNonVisualDrawingPropertiesExtension);
-
-            applicationNonVisualDrawingProperties.Append(applicationNonVisualDrawingPropertiesExtensionList);
-
-            nonVisualPictureProperties.Append(applicationNonVisualDrawingProperties);
-
-            picture.Append(nonVisualPictureProperties);
-
-            blipFill = new BlipFill();
-
-            aBlip = new A.Blip();
-            aBlip.Embed = "rId4";
-
-            blipFill.Append(aBlip);
-
-            aStretch = new A.Stretch();
-
-            aFillRectangle = new A.FillRectangle();
-
-            aStretch.Append(aFillRectangle);
-
-            blipFill.Append(aStretch);
-
-            picture.Append(blipFill);
-
-            shapeProperties = new ShapeProperties();
-
-            aTransform2D = new A.Transform2D();
-
-            aOffset = new A.Offset();
-            aOffset.X = 4164759;
-            aOffset.Y = 1709928;
-
-            aTransform2D.Append(aOffset);
-
-            aExtents = new A.Extents();
-            aExtents.Cx = 1856232;
-            aExtents.Cy = 1152144;
-
-            aTransform2D.Append(aExtents);
-
-            shapeProperties.Append(aTransform2D);
-
-            aPresetGeometry = new A.PresetGeometry();
-            aPresetGeometry.Preset = A.ShapeTypeValues.Rectangle;
-
-            aAdjustValueList = new A.AdjustValueList();
-
-            aPresetGeometry.Append(aAdjustValueList);
-
-            shapeProperties.Append(aPresetGeometry);
-
-            picture.Append(shapeProperties);
-
-            shapeTree.Append(picture);
-
-            picture = new Picture();
-
-            nonVisualPictureProperties = new NonVisualPictureProperties();
-
-            nonVisualDrawingProperties = new NonVisualDrawingProperties();
-            nonVisualDrawingProperties.Id = 5u;
-            nonVisualDrawingProperties.Name = "Picture 4";
-
-            aNonVisualDrawingPropertiesExtensionList = new A.NonVisualDrawingPropertiesExtensionList();
-
-            aNonVisualDrawingPropertiesExtension = new A.NonVisualDrawingPropertiesExtension();
-            aNonVisualDrawingPropertiesExtension.Uri = "{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}";
-
-            creationId = new CreationId();
-
-            creationId.AddNamespaceDeclaration("a16", "http://schemas.microsoft.com/office/drawing/2014/main");
-
-            creationId.Id = "{052E9B24-311D-419E-BEF2-114BC182D094}";
-
-            aNonVisualDrawingPropertiesExtension.Append(creationId);
-
-            aNonVisualDrawingPropertiesExtensionList.Append(aNonVisualDrawingPropertiesExtension);
-
-            nonVisualDrawingProperties.Append(aNonVisualDrawingPropertiesExtensionList);
-
-            nonVisualPictureProperties.Append(nonVisualDrawingProperties);
-
-            nonVisualPictureDrawingProperties = new NonVisualPictureDrawingProperties();
-
-            aPictureLocks = new A.PictureLocks();
-            aPictureLocks.NoChangeAspect = true;
-
-            nonVisualPictureDrawingProperties.Append(aPictureLocks);
-
-            nonVisualPictureProperties.Append(nonVisualPictureDrawingProperties);
-
-            applicationNonVisualDrawingProperties = new ApplicationNonVisualDrawingProperties();
-
-            nonVisualPictureProperties.Append(applicationNonVisualDrawingProperties);
-
-            picture.Append(nonVisualPictureProperties);
-
-            blipFill = new BlipFill();
-
-            aBlip = new A.Blip();
-            aBlip.Embed = "rId5";
-
-            A.BlipExtensionList aBlipExtensionList = new A.BlipExtensionList();
-
-            A.BlipExtension aBlipExtension = new A.BlipExtension();
-            aBlipExtension.Uri = "{28A0092B-C50C-407E-A947-70E740481C1C}";
-
-            A14.UseLocalDpi a14UseLocalDpi = new A14.UseLocalDpi();
-
-            a14UseLocalDpi.AddNamespaceDeclaration("a14", "http://schemas.microsoft.com/office/drawing/2010/main");
-
-            a14UseLocalDpi.Val = false;
-
-            aBlipExtension.Append(a14UseLocalDpi);
-
-            aBlipExtensionList.Append(aBlipExtension);
-
-            aBlip.Append(aBlipExtensionList);
-
-            blipFill.Append(aBlip);
-
-            aStretch = new A.Stretch();
-
-            aFillRectangle = new A.FillRectangle();
-
-            aStretch.Append(aFillRectangle);
-
-            blipFill.Append(aStretch);
-
-            picture.Append(blipFill);
-
-            shapeProperties = new ShapeProperties();
-
-            aTransform2D = new A.Transform2D();
-
-            aOffset = new A.Offset();
-            aOffset.X = 3733819;
-            aOffset.Y = 66699;
-
-            aTransform2D.Append(aOffset);
-
-            aExtents = new A.Extents();
-            aExtents.Cx = 304762;
-            aExtents.Cy = 380952;
-
-            aTransform2D.Append(aExtents);
-
-            shapeProperties.Append(aTransform2D);
-
-            aPresetGeometry = new A.PresetGeometry();
-            aPresetGeometry.Preset = A.ShapeTypeValues.Rectangle;
-
-            aAdjustValueList = new A.AdjustValueList();
-
-            aPresetGeometry.Append(aAdjustValueList);
-
-            shapeProperties.Append(aPresetGeometry);
-
-            picture.Append(shapeProperties);
-
-            shapeTree.Append(picture);
-
-            commonSlideData.Append(shapeTree);
-
-            CommonSlideDataExtensionList commonSlideDataExtensionList = new CommonSlideDataExtensionList();
-
-            CommonSlideDataExtension commonSlideDataExtension = new CommonSlideDataExtension();
-            commonSlideDataExtension.Uri = "{BB962C8B-B14F-4D97-AF65-F5344CB8AC3E}";
-
-            P14.CreationId p14CreationId = new P14.CreationId();
-
-            p14CreationId.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
-
-            p14CreationId.Val = 1718767114u;
-
-            commonSlideDataExtension.Append(p14CreationId);
-
-            commonSlideDataExtensionList.Append(commonSlideDataExtension);
-
-            commonSlideData.Append(commonSlideDataExtensionList);
-
-            slide.Append(commonSlideData);
-
-            ColorMapOverride colorMapOverride = new ColorMapOverride();
-
-            A.MasterColorMapping aMasterColorMapping = new A.MasterColorMapping();
-
-            colorMapOverride.Append(aMasterColorMapping);
-
-            slide.Append(colorMapOverride);
-
-            Timing timing = new Timing();
-
-            TimeNodeList timeNodeList = new TimeNodeList();
-
-            ParallelTimeNode parallelTimeNode = new ParallelTimeNode();
-
-            CommonTimeNode commonTimeNode = new CommonTimeNode();
-            commonTimeNode.Id = 1u;
-            commonTimeNode.Duration = "indefinite";
-            commonTimeNode.Restart = TimeNodeRestartValues.Never;
-            commonTimeNode.NodeType = TimeNodeValues.TmingRoot;
-
-            ChildTimeNodeList childTimeNodeList = new ChildTimeNodeList();
-
-            SequenceTimeNode sequenceTimeNode = new SequenceTimeNode();
-            sequenceTimeNode.Concurrent = true;
-            sequenceTimeNode.NextAction = NextActionValues.Seek;
-
-            CommonTimeNode commonTimeNode1 = new CommonTimeNode();
-            commonTimeNode1.Id = 2u;
-            commonTimeNode1.Duration = "indefinite";
-            commonTimeNode1.NodeType = TimeNodeValues.MainSequence;
-
-            ChildTimeNodeList childTimeNodeList1 = new ChildTimeNodeList();
-
-            ParallelTimeNode parallelTimeNode1 = new ParallelTimeNode();
-
-            CommonTimeNode commonTimeNode2 = new CommonTimeNode();
-            commonTimeNode2.Id = 3u;
-            commonTimeNode2.Fill = TimeNodeFillValues.Hold;
-
-            StartConditionList startConditionList = new StartConditionList();
-
-            Condition condition = new Condition();
-            condition.Delay = "indefinite";
-
-            startConditionList.Append(condition);
-
-            condition = new Condition();
-            condition.Delay = "0";
-            condition.Event = TriggerEventValues.OnBegin;
-
-            TimeNode timeNode = new TimeNode();
-            timeNode.Val = 2u;
-
-            condition.Append(timeNode);
-
-            startConditionList.Append(condition);
-
-            commonTimeNode2.Append(startConditionList);
-
-            ChildTimeNodeList childTimeNodeList2 = new ChildTimeNodeList();
-
-            ParallelTimeNode parallelTimeNode2 = new ParallelTimeNode();
-
-            CommonTimeNode commonTimeNode3 = new CommonTimeNode();
-            commonTimeNode3.Id = 4u;
-            commonTimeNode3.Fill = TimeNodeFillValues.Hold;
-
-            startConditionList = new StartConditionList();
-
-            condition = new Condition();
-            condition.Delay = "0";
-
-            startConditionList.Append(condition);
-
-            commonTimeNode3.Append(startConditionList);
-
-            ChildTimeNodeList childTimeNodeList3 = new ChildTimeNodeList();
-
-            ParallelTimeNode parallelTimeNode3 = new ParallelTimeNode();
-
-            CommonTimeNode commonTimeNode4 = new CommonTimeNode();
-            commonTimeNode4.Id = 5u;
-            commonTimeNode4.PresetId = 1;
-            commonTimeNode4.PresetSubtype = 0;
-            commonTimeNode4.PresetClass = TimeNodePresetClassValues.MediaCall;
-            commonTimeNode4.Fill = TimeNodeFillValues.Hold;
-            commonTimeNode4.NodeType = TimeNodeValues.WithEffect;
-
-            startConditionList = new StartConditionList();
-
-            condition = new Condition();
-            condition.Delay = "0";
-
-            startConditionList.Append(condition);
-
-            commonTimeNode4.Append(startConditionList);
-
-            ChildTimeNodeList childTimeNodeList4 = new ChildTimeNodeList();
-
-            Command command = new Command();
-            command.CommandName = "playFrom(0.0)";
-            command.Type = CommandValues.Call;
-
-            CommonBehavior commonBehavior = new CommonBehavior();
-
-            CommonTimeNode commonTimeNode5 = new CommonTimeNode();
-            commonTimeNode5.Id = 6u;
-            commonTimeNode5.Duration = "5000";
-            commonTimeNode5.Fill = TimeNodeFillValues.Hold;
-
-            commonBehavior.Append(commonTimeNode5);
-
-            TargetElement targetElement = new TargetElement();
-
-            ShapeTarget shapeTarget = new ShapeTarget();
-            shapeTarget.ShapeId = "2";
-
-            targetElement.Append(shapeTarget);
-
-            commonBehavior.Append(targetElement);
-
-            command.Append(commonBehavior);
-
-            childTimeNodeList4.Append(command);
-
-            commonTimeNode4.Append(childTimeNodeList4);
-
-            parallelTimeNode3.Append(commonTimeNode4);
-
-            childTimeNodeList3.Append(parallelTimeNode3);
-
-            parallelTimeNode3 = new ParallelTimeNode();
-
-            commonTimeNode5 = new CommonTimeNode();
-            commonTimeNode5.Id = 7u;
-            commonTimeNode5.PresetId = 1;
-            commonTimeNode5.PresetSubtype = 0;
-            commonTimeNode5.PresetClass = TimeNodePresetClassValues.MediaCall;
-            commonTimeNode5.Fill = TimeNodeFillValues.Hold;
-            commonTimeNode5.NodeType = TimeNodeValues.WithEffect;
-
-            startConditionList = new StartConditionList();
-
-            condition = new Condition();
-            condition.Delay = "0";
-
-            startConditionList.Append(condition);
-
-            commonTimeNode5.Append(startConditionList);
-
-            childTimeNodeList4 = new ChildTimeNodeList();
-
-            command = new Command();
-            command.CommandName = "playFrom(0.0)";
-            command.Type = CommandValues.Call;
-
-            commonBehavior = new CommonBehavior();
-
-            commonTimeNode4 = new CommonTimeNode();
-            commonTimeNode4.Id = 8u;
-            commonTimeNode4.Duration = "5000";
-            commonTimeNode4.Fill = TimeNodeFillValues.Hold;
-
-            commonBehavior.Append(commonTimeNode4);
-
-            targetElement = new TargetElement();
-
-            shapeTarget = new ShapeTarget();
-            shapeTarget.ShapeId = "3";
-
-            targetElement.Append(shapeTarget);
-
-            commonBehavior.Append(targetElement);
-
-            command.Append(commonBehavior);
-
-            childTimeNodeList4.Append(command);
-
-            commonTimeNode5.Append(childTimeNodeList4);
-
-            parallelTimeNode3.Append(commonTimeNode5);
-
-            childTimeNodeList3.Append(parallelTimeNode3);
-
-            commonTimeNode3.Append(childTimeNodeList3);
-
-            parallelTimeNode2.Append(commonTimeNode3);
-
-            childTimeNodeList2.Append(parallelTimeNode2);
-
-            commonTimeNode2.Append(childTimeNodeList2);
-
-            parallelTimeNode1.Append(commonTimeNode2);
-
-            childTimeNodeList1.Append(parallelTimeNode1);
-
-            commonTimeNode1.Append(childTimeNodeList1);
-
-            sequenceTimeNode.Append(commonTimeNode1);
-
-            PreviousConditionList previousConditionList = new PreviousConditionList();
-
-            condition = new Condition();
-            condition.Delay = "0";
-            condition.Event = TriggerEventValues.OnPrevious;
-
-            targetElement = new TargetElement();
-
-            SlideTarget slideTarget = new SlideTarget();
-
-            targetElement.Append(slideTarget);
-
-            condition.Append(targetElement);
-
-            previousConditionList.Append(condition);
-
-            sequenceTimeNode.Append(previousConditionList);
-
-            NextConditionList nextConditionList = new NextConditionList();
-
-            condition = new Condition();
-            condition.Delay = "0";
-            condition.Event = TriggerEventValues.OnNext;
-
-            targetElement = new TargetElement();
-
-            slideTarget = new SlideTarget();
-
-            targetElement.Append(slideTarget);
-
-            condition.Append(targetElement);
-
-            nextConditionList.Append(condition);
-
-            sequenceTimeNode.Append(nextConditionList);
-
-            childTimeNodeList.Append(sequenceTimeNode);
-
-            Video video = new Video();
-
-            CommonMediaNode commonMediaNode = new CommonMediaNode();
-            commonMediaNode.Volume = 80000;
-
-            commonTimeNode5 = new CommonTimeNode();
-            commonTimeNode5.Id = 9u;
-            commonTimeNode5.RepeatCount = "indefinite";
-            commonTimeNode5.Display = false;
-            commonTimeNode5.Fill = TimeNodeFillValues.Hold;
-
-            startConditionList = new StartConditionList();
-
-            condition = new Condition();
-            condition.Delay = "indefinite";
-
-            startConditionList.Append(condition);
-
-            commonTimeNode5.Append(startConditionList);
-
-            commonMediaNode.Append(commonTimeNode5);
-
-            targetElement = new TargetElement();
-
-            shapeTarget = new ShapeTarget();
-            shapeTarget.ShapeId = "2";
-
-            targetElement.Append(shapeTarget);
-
-            commonMediaNode.Append(targetElement);
-
-            video.Append(commonMediaNode);
-
-            childTimeNodeList.Append(video);
-
-            video = new Video();
-
-            commonMediaNode = new CommonMediaNode();
-            commonMediaNode.Volume = 80000;
-
-            commonTimeNode5 = new CommonTimeNode();
-            commonTimeNode5.Id = 10u;
-            commonTimeNode5.RepeatCount = "indefinite";
-            commonTimeNode5.Display = false;
-            commonTimeNode5.Fill = TimeNodeFillValues.Hold;
-
-            startConditionList = new StartConditionList();
-
-            condition = new Condition();
-            condition.Delay = "indefinite";
-
-            startConditionList.Append(condition);
-
-            commonTimeNode5.Append(startConditionList);
-
-            commonMediaNode.Append(commonTimeNode5);
-
-            targetElement = new TargetElement();
-
-            shapeTarget = new ShapeTarget();
-            shapeTarget.ShapeId = "3";
-
-            targetElement.Append(shapeTarget);
-
-            commonMediaNode.Append(targetElement);
-
-            video.Append(commonMediaNode);
-
-            childTimeNodeList.Append(video);
-
-            commonTimeNode.Append(childTimeNodeList);
-
-            parallelTimeNode.Append(commonTimeNode);
-
-            timeNodeList.Append(parallelTimeNode);
-
-            timing.Append(timeNodeList);
-
-            slide.Append(timing);
-
-            part.Slide = slide;
-        }
-        
         private void GenerateViewPropertiesPart(ref ViewPropertiesPart part)
         {
             ViewProperties viewProperties = new ViewProperties();
@@ -17934,69 +16851,6 @@ namespace OpenXmlSample
             part.ViewProperties = viewProperties;
         }
         
-        private void GeneratePresentationPropertiesPart(ref PresentationPropertiesPart part)
-        {
-            PresentationProperties presentationProperties = new PresentationProperties();
-
-            presentationProperties.AddNamespaceDeclaration("a", "http://schemas.openxmlformats.org/drawingml/2006/main");
-            presentationProperties.AddNamespaceDeclaration("r", "http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-            presentationProperties.AddNamespaceDeclaration("p", "http://schemas.openxmlformats.org/presentationml/2006/main");
-
-            ColorMostRecentlyUsed colorMostRecentlyUsed = new ColorMostRecentlyUsed();
-
-            A.RgbColorModelHex aRgbColorModelHex = new A.RgbColorModelHex();
-            aRgbColorModelHex.Val = "2A2835";
-
-            colorMostRecentlyUsed.Append(aRgbColorModelHex);
-
-            presentationProperties.Append(colorMostRecentlyUsed);
-
-            PresentationPropertiesExtensionList presentationPropertiesExtensionList = new PresentationPropertiesExtensionList();
-
-            PresentationPropertiesExtension presentationPropertiesExtension = new PresentationPropertiesExtension();
-            presentationPropertiesExtension.Uri = "{E76CE94A-603C-4142-B9EB-6D1370010A27}";
-
-            P14.DiscardImageEditData p14DiscardImageEditData = new P14.DiscardImageEditData();
-
-            p14DiscardImageEditData.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
-
-            p14DiscardImageEditData.Val = false;
-
-            presentationPropertiesExtension.Append(p14DiscardImageEditData);
-
-            presentationPropertiesExtensionList.Append(presentationPropertiesExtension);
-
-            presentationPropertiesExtension = new PresentationPropertiesExtension();
-            presentationPropertiesExtension.Uri = "{D31A062A-798A-4329-ABDD-BBA856620510}";
-
-            P14.DefaultImageDpi p14DefaultImageDpi = new P14.DefaultImageDpi();
-
-            p14DefaultImageDpi.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
-
-            p14DefaultImageDpi.Val = 32767u;
-
-            presentationPropertiesExtension.Append(p14DefaultImageDpi);
-
-            presentationPropertiesExtensionList.Append(presentationPropertiesExtension);
-
-            presentationPropertiesExtension = new PresentationPropertiesExtension();
-            presentationPropertiesExtension.Uri = "{FD5EFAAD-0ECE-453E-9831-46B23BE46B34}";
-
-            P15.ChartTrackingReferenceBased p15ChartTrackingReferenceBased = new P15.ChartTrackingReferenceBased();
-
-            p15ChartTrackingReferenceBased.AddNamespaceDeclaration("p15", "http://schemas.microsoft.com/office/powerpoint/2012/main");
-
-            p15ChartTrackingReferenceBased.Val = true;
-
-            presentationPropertiesExtension.Append(p15ChartTrackingReferenceBased);
-
-            presentationPropertiesExtensionList.Append(presentationPropertiesExtension);
-
-            presentationProperties.Append(presentationPropertiesExtensionList);
-
-            part.PresentationProperties = presentationProperties;
-        }
-        
         private void GenerateExtendedFilePropertiesPart(ref ExtendedFilePropertiesPart part)
         {
             AP.Properties apProperties = new AP.Properties();
@@ -18027,7 +16881,7 @@ namespace OpenXmlSample
 
             apProperties.Append(apParagraphs);
 
-            AP.Slides apSlides = new AP.Slides("2");
+            AP.Slides apSlides = new AP.Slides("1");
 
             apProperties.Append(apSlides);
 
@@ -18039,7 +16893,7 @@ namespace OpenXmlSample
 
             apProperties.Append(apHiddenSlides);
 
-            AP.MultimediaClips apMultimediaClips = new AP.MultimediaClips("4");
+            AP.MultimediaClips apMultimediaClips = new AP.MultimediaClips("1");
 
             apProperties.Append(apMultimediaClips);
 
@@ -18095,7 +16949,7 @@ namespace OpenXmlSample
 
             vtVariant = new VT.Variant();
 
-            vtVTInt32 = new VT.VTInt32("2");
+            vtVTInt32 = new VT.VTInt32("1");
 
             vtVariant.Append(vtVTInt32);
 
@@ -18108,7 +16962,7 @@ namespace OpenXmlSample
             AP.TitlesOfParts apTitlesOfParts = new AP.TitlesOfParts();
 
             vtVTVector = new VT.VTVector();
-            vtVTVector.Size = 6u;
+            vtVTVector.Size = 5u;
             vtVTVector.BaseType = VT.VectorBaseValues.Lpstr;
 
             vtVTLPSTR = new VT.VTLPSTR("Arial");
@@ -18124,10 +16978,6 @@ namespace OpenXmlSample
             vtVTVector.Append(vtVTLPSTR);
 
             vtVTLPSTR = new VT.VTLPSTR("Office Theme");
-
-            vtVTVector.Append(vtVTLPSTR);
-
-            vtVTLPSTR = new VT.VTLPSTR("PowerPoint Presentation");
 
             vtVTVector.Append(vtVTLPSTR);
 

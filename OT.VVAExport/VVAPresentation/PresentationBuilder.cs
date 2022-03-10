@@ -12,6 +12,7 @@
     using D = DocumentFormat.OpenXml.Drawing;
     using IO = System.IO;
     using System.IO;
+    using OT.VVAExport.VVAPresentation.VVABuilder;
 
     /// <summary>
     /// Follow the OpenXml Docs
@@ -21,12 +22,6 @@
     /// </summary>
     public partial class PresentationBuilder
     {
-        const int SLIDE_WIDTH = 7772400;
-        const int SLIDE_HEIGHT = 4572000;
-
-        private PresentationDocument _presentationDocument = null;
-        private PresentationPart _presentationPart = null;
-
         public void Create(string filePath = null)
         {
             PresentationDocument presentationDocument = null;
@@ -40,11 +35,11 @@
 
                 this.CleanRelationshipId();
 
-                _presentationDocument = presentationDocument = PresentationDocument.Create(filePath, PresentationDocumentType.Presentation);
-                PresentationPart presentationPart = _presentationPart = presentationDocument.AddPresentationPart();
+                presentationDocument = PresentationDocument.Create(filePath, PresentationDocumentType.Presentation);
+                PresentationPart presentationPart = presentationDocument.AddPresentationPart();
                 presentationPart.Presentation = new Presentation();
 
-                CreatePresentationParts(presentationPart);
+                CreatePresentationParts(presentationPart, presentationDocument);
 
                 // Close the presentation handle
                 presentationDocument.Close();
@@ -55,28 +50,20 @@
                 {
                     presentationDocument.Dispose();
                 }
-
-                _presentationDocument = null;
-                _presentationPart = null;
             }
         }
 
-        private void CreatePresentationParts(PresentationPart presentationPart)
+        private void CreatePresentationParts(PresentationPart presentationPart, PresentationDocument presentationDocument)
         {
             //var imagePartId = this.GeneratePartRelationshipId<ImagePart>();
             var slideMasterId = GenerateRelationshipId<SlideMasterId>();
-            var openingSlidePart = presentationPart.AddNewPart<SlidePart>(this.GenerateRelationshipId<SlideId>());
-            
-            ImagePart otfImagePart = openingSlidePart.AddImagePart(ImagePartType.Png);
-            using (IO.Stream stream = new IO.MemoryStream(File.ReadAllBytes(IO.Path.GetFullPath("./otf-logo.png"))))
-            {
-                otfImagePart.FeedData(stream);
-                //stream.Close();
-            }
-            this.GenerateOpeningSlidePart(ref openingSlidePart, otfImagePart);
 
-            var openingSlideLayoutPart = openingSlidePart.AddNewPart<SlideLayoutPart>(slideMasterId);
-            this.GenerateOpeningSlideLayoutPart(ref openingSlideLayoutPart);
+            var vvaOpeningSlideBuilder = new VVAOpeningSlideBuilder(this, presentationPart);
+            vvaOpeningSlideBuilder.SetOtfImagePart();
+            vvaOpeningSlideBuilder.GenerateSlide();
+
+            var openingSlideLayoutPart = vvaOpeningSlideBuilder.SlidePart.AddNewPart<SlideLayoutPart>(slideMasterId);
+            this.GenerateSlideLayoutPart(ref openingSlideLayoutPart);
 
             var slideMasterPart = openingSlideLayoutPart.AddNewPart<SlideMasterPart>(slideMasterId);
             this.GenerateSlideMasterPart(ref slideMasterPart);
@@ -85,21 +72,29 @@
             presentationPart.AddPart(slideMasterPart, slideMasterId);
 
             // Slide 2
-            var vvaSlide = presentationPart.AddNewPart<SlidePart>(this.GenerateRelationshipId<SlideId>());
-            this.GenerateVVASlidePart(ref vvaSlide);
-
-            vvaSlide.AddPart<SlideLayoutPart>(openingSlideLayoutPart, slideMasterId);
+            var vvaExerciseSlideBuilder = new VVAExerciseSlideBuilder(this, presentationPart, presentationDocument)
+            {
+                BlockDuration = "00:00",
+                BlockName = "Block name",
+                Exercises = new List<Models.VVAExercise>
+                {
+                    new Models.VVAExercise{ ExerciseId = 1, Name = "Exercise Name", Prescription = "300m JUST ONCE", VideoUrl=""}
+                }
+            };
+            //vvaExerciseSlideBuilder.SetOtfImagePart();
+            vvaExerciseSlideBuilder.OtfImagePart = vvaExerciseSlideBuilder.SlidePart.AddPart<ImagePart>(vvaOpeningSlideBuilder.OtfImagePart);
+            vvaExerciseSlideBuilder.GenerateSlide();
+            vvaExerciseSlideBuilder.SlidePart.AddPart<SlideLayoutPart>(openingSlideLayoutPart, slideMasterId);
+            slideMasterPart.AddPart(vvaExerciseSlideBuilder.SlidePart);
 
             var themePart = CreateTheme(slideMasterPart);
             presentationPart.AddPart(themePart, this.LastRelationshipIdOf<Theme>());
 
-            SlideSize slideSize = new SlideSize() { Cx = SLIDE_WIDTH, Cy = 4572000 };
-            NotesSize notesSize = new NotesSize() { Cx = 6858000, Cy = 9144000 };
+            SlideSize slideSize = new SlideSize() { Cx = VVAConstants.SLIDE_WIDTH, Cy = VVAConstants.SLIDE_HEIGHT };
+            NotesSize notesSize = new NotesSize() { Cx = VVAConstants.NOTE_WIDTH, Cy = VVAConstants.NOTE_HEIGHT };
             DefaultTextStyle defaultTextStyle = new DefaultTextStyle();
 
             presentationPart.Presentation.Append(this.GetIdList<SlideMasterId>(), this.GetIdList<SlideId>(), slideSize, notesSize, defaultTextStyle);
         }
-
-       
     }
 }

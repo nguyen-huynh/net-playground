@@ -110,10 +110,10 @@
 
         public static ShapeProperties AppendShapeProperties<T>(
             this T element,
-            int posX = 0,
-            int posY = 0,
-            int width = 0,
-            int height = 0) where T : Picture
+            long? posX = 0,
+            long? posY = 0,
+            long? width = 0,
+            long? height = 0) where T : Picture
         {
             if (element == null)
                 throw new ArgumentNullException(nameof(element));
@@ -132,14 +132,14 @@
             var aTransform2D = new Transform2D();
 
             var aOffset = new Offset();
-            aOffset.X = 3767260;
-            aOffset.Y = 50259;
+            aOffset.X = posX;
+            aOffset.Y = posY;
 
             aTransform2D.Append(aOffset);
 
             var aExtents = new Extents();
-            aExtents.Cx = 228745;
-            aExtents.Cy = 285750;
+            aExtents.Cx = width;
+            aExtents.Cy = height;
 
             aTransform2D.Append(aExtents);
 
