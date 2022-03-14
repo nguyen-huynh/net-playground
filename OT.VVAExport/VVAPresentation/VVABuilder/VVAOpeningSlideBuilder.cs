@@ -19,13 +19,13 @@
     using GroupShape = DocumentFormat.OpenXml.Presentation.GroupShape;
     using Picture = DocumentFormat.OpenXml.Presentation.Picture;
 
-    public class VVAOpeningSlideBuilder : VVASlideBuilder
+    public class VVAOpeningSlideBuilder : VVASlideBuilder, IVVASlideBuilder
     {
         public VVAOpeningSlideBuilder(PresentationBuilder presentationBuilder, PresentationPart presentationPart) : base(presentationBuilder, presentationPart)
         {
         }
 
-        public override ShapeTree GetShapeTree()
+        private protected override ShapeTree GetShapeTree()
         {
             var shapeTree = new ShapeTree();
             shapeTree.Append(new NonVisualGroupShapeProperties(

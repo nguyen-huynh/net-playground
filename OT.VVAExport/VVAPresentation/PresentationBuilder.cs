@@ -55,6 +55,12 @@
 
         private void CreatePresentationParts(PresentationPart presentationPart, PresentationDocument presentationDocument)
         {
+            MediaDataPart mediaDataPart1 = presentationDocument.CreateMediaDataPart("video/mp4", "mp4");
+            using (var stream = File.OpenRead("./video.mp4"))
+            {
+                mediaDataPart1.FeedData(stream);
+            }
+
             //var imagePartId = this.GeneratePartRelationshipId<ImagePart>();
             var slideMasterId = GenerateRelationshipId<SlideMasterId>();
 
@@ -79,8 +85,11 @@
                 Exercises = new List<Models.VVAExercise>
                 {
                     new Models.VVAExercise{ ExerciseId = 1, Name = "Exercise Name", Prescription = "300m JUST ONCE", VideoUrl=""}
-                }
+                },
+                ExerciseMediaDataPart = mediaDataPart1
             };
+            vvaExerciseSlideBuilder.SlidePart.AddVideoReferenceRelationship(mediaDataPart1, "rId2");
+            vvaExerciseSlideBuilder.SlidePart.AddMediaReferenceRelationship(mediaDataPart1, "rId1");
             //vvaExerciseSlideBuilder.SetOtfImagePart();
             vvaExerciseSlideBuilder.OtfImagePart = vvaExerciseSlideBuilder.SlidePart.AddPart<ImagePart>(vvaOpeningSlideBuilder.OtfImagePart);
             vvaExerciseSlideBuilder.GenerateSlide();

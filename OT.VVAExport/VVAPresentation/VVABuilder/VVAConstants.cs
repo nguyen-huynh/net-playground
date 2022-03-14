@@ -22,6 +22,7 @@ namespace OT.VVAExport.VVAPresentation.VVABuilder
         public static readonly int OTF_IMAGE_TOP = PixelToOpenXmlUnit(5);
 
         public static readonly int EXERCISE_GROUP_SHAPE_HEIGHT = PixelToOpenXmlUnit(282);
+        public static readonly string EXERCISE_VIDEO_DURATION = "5000";    // 15s
 
         private static readonly List<VVAExerciseConfig> VVAExerciseConfigs = new List<VVAExerciseConfig>
         {

@@ -6,6 +6,7 @@
     using DocumentFormat.OpenXml.Presentation;
     using System;
     using System.Diagnostics;
+    using A = DocumentFormat.OpenXml.Drawing;
     using P = DocumentFormat.OpenXml.Presentation;
     using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
     using D = DocumentFormat.OpenXml.Drawing;
@@ -23,6 +24,9 @@
     using OT.VVAExport.Models;
     using System.Linq;
     using System.IO;
+    using NonVisualPictureProperties = DocumentFormat.OpenXml.Presentation.NonVisualPictureProperties;
+    using NonVisualPictureDrawingProperties = DocumentFormat.OpenXml.Presentation.NonVisualPictureDrawingProperties;
+    using BlipFill = DocumentFormat.OpenXml.Presentation.BlipFill;
 
     public class VVAExerciseSlideBuilder : VVASlideBuilder
     {
@@ -51,31 +55,353 @@
                 ExerciseVideoImagePart.FeedData(stream);
             }
 
-            ExerciseMediaDataPart = _presentationDocument.CreateMediaDataPart("video/mp4", "mp4");
-            using (var stream = File.OpenRead("./video.mp4"))
-            {
-                ExerciseMediaDataPart.FeedData(stream);
-            }
+            //ExerciseMediaDataPart = _presentationDocument.CreateMediaDataPart(MediaDataPartType.Wmv);
+            //using (var stream = File.OpenRead("./video.wmv"))
+            //{
+            //    ExerciseMediaDataPart.FeedData(stream);
+            //}
+            //_presentationDocument.Save();
 
-            this.SlidePart.AddVideoReferenceRelationship(ExerciseMediaDataPart);
-            this.SlidePart.AddMediaReferenceRelationship(ExerciseMediaDataPart);
+            //this.SlidePart.AddVideoReferenceRelationship(ExerciseMediaDataPart);
+            //this.SlidePart.AddMediaReferenceRelationship(ExerciseMediaDataPart);
+            //this.SlidePart.AddExternalRelationship("http://schemas.openxmlformats.org/officeDocument/2006/relationships/video", new System.Uri("NULL"), "rId1");
 
-            
             SlidePart.Slide.Save();
 
             base.GenerateSlide();
 
-            this.AddExerciseTiming();
+            GenerateExerciseTiming();
         }
 
-        private void AddExerciseTiming()
+        public override Shape GetBlockDuration()
+        {
+            if (string.IsNullOrEmpty(BlockDuration)) return null;
+
+            var blockNameShape = new Shape();
+            blockNameShape.AppendDefaultNonVisualShapeProperties(id: _presentationBuilder.NewId, name: "BlockDuration");
+            blockNameShape.AppendDefaultShapeProperties(posX: (VVAConstants.SLIDE_WIDTH + VVAConstants.OTF_IMAGE_WIDTH) / 2,
+                                                        width: (VVAConstants.SLIDE_WIDTH - VVAConstants.OTF_IMAGE_WIDTH) / 2,
+                                                        height: VVAConstants.TOP_WHITE_REC_HEIGHT);
+            blockNameShape.AppendDefaultShapeStyle();
+            blockNameShape.AppendDefaultTextBody(text: BlockDuration, textAlignment: TextAlignmentTypeValues.Right);
+            return blockNameShape;
+        }
+
+        public override Shape GetBlockName()
+        {
+            if (string.IsNullOrEmpty(BlockName)) return null;
+
+            var blockNameShape = new Shape();
+            blockNameShape.AppendDefaultNonVisualShapeProperties(id: _presentationBuilder.NewId, name: "BlockName");
+            blockNameShape.AppendDefaultShapeProperties(width: (VVAConstants.SLIDE_WIDTH - VVAConstants.OTF_IMAGE_WIDTH) / 2,
+                                                        height: VVAConstants.TOP_WHITE_REC_HEIGHT);
+            blockNameShape.AppendDefaultShapeStyle();
+            blockNameShape.AppendDefaultTextBody(text: BlockName);
+            return blockNameShape;
+        }
+
+        public override ShapeTree GetShapeTree()
+        {
+            var shapeTree = new ShapeTree();
+            shapeTree.Append(new NonVisualGroupShapeProperties(
+                                new NonVisualDrawingProperties() { Id = _presentationBuilder.NewId, Name = "" },
+                                new NonVisualGroupShapeDrawingProperties(),
+                                new ApplicationNonVisualDrawingProperties()));
+
+            shapeTree.Append(new GroupShapeProperties(new TransformGroup()));
+
+            var topWhiteGroupShape = this.GenerateTopWhiteRectangle(ref shapeTree);
+            shapeTree.Append(topWhiteGroupShape);
+
+            var exerciseGroupShape = GetExerciseGroupShape();
+            shapeTree.Append(exerciseGroupShape);
+
+            return shapeTree;
+        }
+
+        public GroupShape GetExerciseGroupShape()
+        {
+            if (Exercises?.Any() != true) return null;
+            var vvaExerciseConfig = VVAConstants.GetVVAExerciseConfigBySlideLength(Exercises.Count());
+
+            var groupShape = new GroupShape();
+            groupShape.AppendDefaultNonVisualGroupShapeProperties(id: _presentationBuilder.NewId, name: "VVAExercise");
+            groupShape.AppendDefaultGroupShapeProperties(
+                posX: (VVAConstants.SLIDE_WIDTH - vvaExerciseConfig.Width) / 2,
+                posY: VVAConstants.PixelToOpenXmlUnit(66),
+                width: vvaExerciseConfig.Width,
+                height: VVAConstants.EXERCISE_GROUP_SHAPE_HEIGHT);
+
+            var whiteShape = new Shape();
+            whiteShape.AppendDefaultNonVisualShapeProperties(id: _presentationBuilder.NewId, name: "ExerciseRec");
+            whiteShape.AppendDefaultShapeProperties(posX: groupShape.GroupShapeProperties.TransformGroup.Offset.X,
+                                                    posY: groupShape.GroupShapeProperties.TransformGroup.Offset.Y,
+                                                    width: groupShape.GroupShapeProperties.TransformGroup.Extents.Cx,
+                                                    height: groupShape.GroupShapeProperties.TransformGroup.Extents.Cy,
+                                                    backgroundColor: "FFFFFF");
+            whiteShape.AppendDefaultShapeStyle();
+            whiteShape.AppendDefaultTextBody(" ");
+            groupShape.Append(whiteShape);
+
+
+            var exerciseNameShape = new Shape();
+            exerciseNameShape.AppendDefaultNonVisualShapeProperties(id: _presentationBuilder.NewId, name: "ExerciseName");
+            exerciseNameShape.AppendDefaultShapeProperties(posX: groupShape.GroupShapeProperties.TransformGroup.Offset.X,
+                                                           posY: groupShape.GroupShapeProperties.TransformGroup.Offset.Y,
+                                                           width: groupShape.GroupShapeProperties.TransformGroup.Extents.Cx,
+                                                           height: VVAConstants.PixelToOpenXmlUnit(64));
+            exerciseNameShape.AppendDefaultShapeStyle();
+            exerciseNameShape.AppendDefaultTextBody(text: "Exercise Name",
+                                                    fontSize: vvaExerciseConfig.FontSize,
+                                                    italic: true,
+                                                    //textAlignment: TextAlignmentTypeValues.Center,
+                                                    textVerticalAlignment: ShapeBuilder.TextVerticalAlignment.MiddleCentered,
+                                                    textBoxFit: ShapeBuilder.TextBoxFit.ShrinkTextOnOverflow);
+            groupShape.Append(exerciseNameShape);
+
+            groupShape.Append(GenerateExerciseVideo(ExerciseMediaDataPart,
+                                                        imagePart: ExerciseVideoImagePart,
+                                                        posX: groupShape.GroupShapeProperties.TransformGroup.Offset.X,
+                                                        posY: groupShape.GroupShapeProperties.TransformGroup.Offset.Y.Value + exerciseNameShape.ShapeProperties.Transform2D.Extents.Cy.Value,
+                                                        width: groupShape.GroupShapeProperties.TransformGroup.Extents.Cx,
+                                                        height: VVAConstants.PixelToOpenXmlUnit(121)));
+
+            var prescriptionShape = new Shape();
+            prescriptionShape.AppendDefaultNonVisualShapeProperties(id: _presentationBuilder.NewId, name: "ExercisePrescription");
+            prescriptionShape.AppendDefaultShapeProperties(posX: groupShape.GroupShapeProperties.TransformGroup.Offset.X,
+                                                           posY: groupShape.GroupShapeProperties.TransformGroup.Offset.Y.Value
+                                                                 + groupShape.GroupShapeProperties.TransformGroup.Extents.Cy.Value
+                                                                 - VVAConstants.PixelToOpenXmlUnit(64),
+                                                           width: groupShape.GroupShapeProperties.TransformGroup.Extents.Cx,
+                                                           height: VVAConstants.PixelToOpenXmlUnit(64));
+            prescriptionShape.AppendDefaultShapeStyle(fontColor: "ED7D31");
+            prescriptionShape.AppendDefaultTextBody(text: "300m JUST ONCE",
+                                                    fontSize: 2000,
+                                                    italic: true,
+                                                    ellipsis: true,
+                                                    //textAlignment: TextAlignmentTypeValues.Center,
+                                                    textVerticalAlignment: ShapeBuilder.TextVerticalAlignment.BottomCentered,
+                                                    fontColor: "ED7D31",
+                                                    textBoxFit: ShapeBuilder.TextBoxFit.ShrinkTextOnOverflow);
+            groupShape.Append(prescriptionShape);
+
+            return groupShape;
+        }
+
+        public Picture GenerateExerciseVideo(MediaDataPart mediaDataPart, ImagePart imagePart, long? posX = null, long? posY = null,
+            long? width = null, long? height = null)
+        {
+            if (mediaDataPart == null) return null;
+
+            var videoRId = this.SlidePart.DataPartReferenceRelationships.Where(x => x.GetType() == typeof(VideoReferenceRelationship) && x.DataPart == ExerciseMediaDataPart).First();
+            var videoMediaRId = this.SlidePart.DataPartReferenceRelationships.Where(x => x.GetType() == typeof(MediaReferenceRelationship) && x.DataPart == ExerciseMediaDataPart).First();
+            var imageRId = this.SlidePart.GetIdOfPart(imagePart);
+
+            Picture videoPicture = new Picture();
+            videoPicture.NonVisualPictureProperties = new NonVisualPictureProperties
+            {
+                NonVisualDrawingProperties = new NonVisualDrawingProperties
+                {
+                    Id = _presentationBuilder.NewId,
+                    Name = "ExerciseVideo",
+                    HyperlinkOnClick = new HyperlinkOnClick() { Id = "", Action = "ppaction://media" },
+                    NonVisualDrawingPropertiesExtensionList = new NonVisualDrawingPropertiesExtensionList(
+                        new NonVisualDrawingPropertiesExtension(
+                            OpenXmlUnknownElement.CreateOpenXmlUnknownElement("<a16:creationId xmlns:a16=\"http://schemas.microsoft.com/office/drawing/2014/main\" id=\"{57DC4828-7E9A-4825-9672-17359C5EBFFC}\" />")
+                        )
+                        { Uri = "{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}" }
+                    )
+                },
+                NonVisualPictureDrawingProperties = new NonVisualPictureDrawingProperties
+                {
+                    PictureLocks = new PictureLocks { NoChangeAspect = false }
+                },
+                ApplicationNonVisualDrawingProperties = new ApplicationNonVisualDrawingProperties(
+                    new VideoFromFile { Link = videoRId.Id },
+                    new ApplicationNonVisualDrawingPropertiesExtensionList(
+                            new ApplicationNonVisualDrawingPropertiesExtension(
+                                new P14.Media()
+                                {
+                                    Embed = videoMediaRId.Id,
+                                    MediaTrim = new P14.MediaTrim { End = VVAConstants.EXERCISE_VIDEO_DURATION }
+                                }
+                            ){ Uri = "{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}" }
+                        )
+                    )
+            };
+
+            videoPicture.BlipFill = new BlipFill
+            {
+                Blip = new Blip { Embed = imageRId },
+            };
+            videoPicture.BlipFill.Append(new Stretch
+            {
+                FillRectangle = new FillRectangle()
+            });
+
+            videoPicture.ShapeProperties = new ShapeProperties
+            {
+                Transform2D = new Transform2D
+                {
+                    Offset = new Offset { X = posX, Y = posY },
+                    Extents = new A.Extents { Cx = width, Cy = height }
+                }
+            };
+            videoPicture.ShapeProperties.Append(new PresetGeometry
+            {
+                Preset = ShapeTypeValues.Rectangle,
+                AdjustValueList = new AdjustValueList()
+            });
+
+            return videoPicture;
+        }
+
+        private void GenerateExerciseTiming()
+        {
+            var videoIds = this.SlidePart.Slide.Descendants<Picture>()
+                .Where(x => x.NonVisualPictureProperties?.NonVisualDrawingProperties?.Name == "ExerciseVideo")
+                .Select(x => x.NonVisualPictureProperties?.NonVisualDrawingProperties?.Id)
+                .Where(x => x.HasValue);
+
+            if (!videoIds.Any()) return;
+
+            var timing = new Timing()
+            {
+                TimeNodeList = new TimeNodeList
+                {
+                    ParallelTimeNode = new ParallelTimeNode
+                    {
+                        CommonTimeNode = new CommonTimeNode
+                        {
+                            Id = _presentationBuilder.NewId,
+                            Duration = "indefinite",
+                            Restart = TimeNodeRestartValues.Never,
+                            NodeType = TimeNodeValues.TmingRoot,
+                            ChildTimeNodeList = new ChildTimeNodeList()
+                        }
+                    }
+                }
+            };
+
+            var childTimeNodeList = timing.TimeNodeList.ParallelTimeNode.CommonTimeNode.ChildTimeNodeList;
+            var seqId = _presentationBuilder.NewId;
+            childTimeNodeList.Append(new SequenceTimeNode
+            {
+                Concurrent = true,
+                NextAction = NextActionValues.Seek,
+                CommonTimeNode = new CommonTimeNode
+                {
+                    Id = seqId,
+                    Duration = "indefinite",
+                    NodeType = TimeNodeValues.MainSequence,
+                    ChildTimeNodeList = new ChildTimeNodeList(
+                        new ParallelTimeNode
+                        {
+                            CommonTimeNode = new CommonTimeNode
+                            {
+                                Id = this._presentationBuilder.NewId,
+                                Fill = TimeNodeFillValues.Hold,
+                                StartConditionList = new StartConditionList(
+                                 new Condition { Delay = "indefinite" },
+                                 new Condition
+                                 {
+                                     Delay = "0",
+                                     Event = TriggerEventValues.OnBegin,
+                                     TimeNode = new TimeNode { Val = seqId }
+                                 }
+                                ),
+                                ChildTimeNodeList = new ChildTimeNodeList(
+                                 new ParallelTimeNode
+                                 {
+                                     CommonTimeNode = new CommonTimeNode
+                                     {
+                                         Id = _presentationBuilder.NewId,
+                                         Fill = TimeNodeFillValues.Hold,
+                                         StartConditionList = new StartConditionList(
+                                             new Condition { Delay = "0" }
+                                         ),
+                                         ChildTimeNodeList = new ChildTimeNodeList(
+                                             videoIds.Select(videoId => new ParallelTimeNode
+                                             {
+                                                 CommonTimeNode = new CommonTimeNode
+                                                 {
+                                                     Id = _presentationBuilder.NewId,
+                                                     PresetId = Int32.Parse(seqId),
+                                                     PresetClass = TimeNodePresetClassValues.MediaCall,
+                                                     PresetSubtype = 0,
+                                                     Fill = TimeNodeFillValues.Hold,
+                                                     NodeType = TimeNodeValues.WithEffect,
+                                                     StartConditionList = new StartConditionList(new Condition { Delay = "0" }),
+                                                     ChildTimeNodeList = new ChildTimeNodeList(
+                                                        new Command
+                                                        {
+                                                            Type = CommandValues.Call,
+                                                            CommandName = "playFrom(0.0)",
+                                                            CommonBehavior = new CommonBehavior
+                                                            {
+                                                                CommonTimeNode = new CommonTimeNode
+                                                                {
+                                                                    Id = _presentationBuilder.NewId,
+                                                                    Duration = VVAConstants.EXERCISE_VIDEO_DURATION,
+                                                                    Fill = TimeNodeFillValues.Hold
+                                                                },
+                                                                TargetElement = new TargetElement
+                                                                {
+                                                                    ShapeTarget = new ShapeTarget { ShapeId = videoId.ToString() }
+                                                                }
+                                                            }
+                                                        }
+                                                     )
+                                                 }
+                                             })
+                                         )
+                                     }
+                                 }
+                                )
+                            }
+                        }
+                        )
+                },
+                PreviousConditionList = new PreviousConditionList(
+                 new Condition() { Event = TriggerEventValues.OnPrevious, Delay = "0", TargetElement = new TargetElement { SlideTarget = new SlideTarget() } }
+                ),
+                NextConditionList = new NextConditionList(
+                  new Condition() { Event = TriggerEventValues.OnNext, Delay = "0", TargetElement = new TargetElement { SlideTarget = new SlideTarget() } }
+                ),
+            });
+
+            childTimeNodeList.Append(videoIds.Select(videoId => new Video
+            {
+                CommonMediaNode = new CommonMediaNode
+                {
+                    Volume = 0,
+                    CommonTimeNode = new CommonTimeNode
+                    {
+                        Id = _presentationBuilder.NewId,
+                        RepeatCount = "indefinite",
+                        Fill = TimeNodeFillValues.Hold,
+                        Display = false,
+                        StartConditionList = new StartConditionList(new Condition { Delay = "indefinite" })
+                    },
+                    TargetElement = new TargetElement
+                    {
+                        ShapeTarget = new ShapeTarget { ShapeId = videoId.ToString() }
+                    }
+                }
+            }));
+
+            SlidePart.Slide.Timing = timing;
+        }
+
+        // Creates an Timing instance and adds its children.
+        public Timing GenerateTiming()
         {
             var videoId = this.SlidePart.Slide.Descendants<Picture>()
                 .Where(x => x.NonVisualPictureProperties?.NonVisualDrawingProperties?.Name == "ExerciseVideo")
                 .FirstOrDefault()
                 ?.NonVisualPictureProperties?.NonVisualDrawingProperties?.Id;
 
-            if (videoId == null) return;
+            if (videoId == null) return null;
 
             Timing timing = new Timing();
 
@@ -298,156 +624,8 @@
             timing.Append(timeNodeList);
 
             SlidePart.Slide.Append(timing);
+            return timing;
         }
 
-        public override Shape GetBlockDuration()
-        {
-            if (string.IsNullOrEmpty(BlockDuration)) return null;
-
-            var blockNameShape = new Shape();
-            blockNameShape.AppendDefaultNonVisualShapeProperties(id: _presentationBuilder.NewId, name: "BlockDuration");
-            blockNameShape.AppendDefaultShapeProperties(posX: (VVAConstants.SLIDE_WIDTH + VVAConstants.OTF_IMAGE_WIDTH) / 2,
-                                                        width: (VVAConstants.SLIDE_WIDTH - VVAConstants.OTF_IMAGE_WIDTH) / 2,
-                                                        height: VVAConstants.TOP_WHITE_REC_HEIGHT);
-            blockNameShape.AppendDefaultShapeStyle();
-            blockNameShape.AppendDefaultTextBody(text: BlockDuration, textAlignment: TextAlignmentTypeValues.Right);
-            return blockNameShape;
-        }
-
-        public override Shape GetBlockName()
-        {
-            if (string.IsNullOrEmpty(BlockName)) return null;
-
-            var blockNameShape = new Shape();
-            blockNameShape.AppendDefaultNonVisualShapeProperties(id: _presentationBuilder.NewId, name: "BlockName");
-            blockNameShape.AppendDefaultShapeProperties(width: (VVAConstants.SLIDE_WIDTH - VVAConstants.OTF_IMAGE_WIDTH) / 2,
-                                                        height: VVAConstants.TOP_WHITE_REC_HEIGHT);
-            blockNameShape.AppendDefaultShapeStyle();
-            blockNameShape.AppendDefaultTextBody(text: BlockName);
-            return blockNameShape;
-        }
-
-        public override ShapeTree GetShapeTree()
-        {
-            var shapeTree = new ShapeTree();
-            shapeTree.Append(new NonVisualGroupShapeProperties(
-                                new NonVisualDrawingProperties() { Id = _presentationBuilder.NewId, Name = "" },
-                                new NonVisualGroupShapeDrawingProperties(),
-                                new ApplicationNonVisualDrawingProperties()));
-
-            shapeTree.Append(new GroupShapeProperties(new TransformGroup()));
-
-            var topWhiteGroupShape = this.GenerateTopWhiteRectangle(ref shapeTree);
-            shapeTree.Append(topWhiteGroupShape);
-
-            var exerciseGroupShape = GetExerciseGroupShape();
-            shapeTree.Append(exerciseGroupShape);
-            
-            return shapeTree;
-        }
-
-        public GroupShape GetExerciseGroupShape()
-        {
-            if (Exercises?.Any() != true) return null;
-            var vvaExerciseConfig = VVAConstants.GetVVAExerciseConfigBySlideLength(Exercises.Count());
-
-            var groupShape = new GroupShape();
-            groupShape.AppendDefaultNonVisualGroupShapeProperties(id: _presentationBuilder.NewId, name: "VVAExercise");
-            groupShape.AppendDefaultGroupShapeProperties(
-                posX: (VVAConstants.SLIDE_WIDTH - vvaExerciseConfig.Width) / 2,
-                posY: VVAConstants.PixelToOpenXmlUnit(66),
-                width: vvaExerciseConfig.Width,
-                height: VVAConstants.EXERCISE_GROUP_SHAPE_HEIGHT);
-
-            var whiteShape = new Shape();
-            whiteShape.AppendDefaultNonVisualShapeProperties(id: _presentationBuilder.NewId, name: "ExerciseRec");
-            whiteShape.AppendDefaultShapeProperties(posX: groupShape.GroupShapeProperties.TransformGroup.Offset.X,
-                                                    posY: groupShape.GroupShapeProperties.TransformGroup.Offset.Y,
-                                                    width: groupShape.GroupShapeProperties.TransformGroup.Extents.Cx,
-                                                    height: groupShape.GroupShapeProperties.TransformGroup.Extents.Cy,
-                                                    backgroundColor: "FFFFFF");
-            whiteShape.AppendDefaultShapeStyle();
-            whiteShape.AppendDefaultTextBody(" ");
-            groupShape.Append(whiteShape);
-
-            
-            var exerciseNameShape = new Shape();
-            exerciseNameShape.AppendDefaultNonVisualShapeProperties(id: _presentationBuilder.NewId, name: "ExerciseName");
-            exerciseNameShape.AppendDefaultShapeProperties(posX: groupShape.GroupShapeProperties.TransformGroup.Offset.X,
-                                                           posY: groupShape.GroupShapeProperties.TransformGroup.Offset.Y,
-                                                           width: groupShape.GroupShapeProperties.TransformGroup.Extents.Cx,
-                                                           height: VVAConstants.PixelToOpenXmlUnit(64));
-            exerciseNameShape.AppendDefaultShapeStyle();
-            exerciseNameShape.AppendDefaultTextBody(text: "Exercise Name",
-                                                    fontSize: vvaExerciseConfig.FontSize,
-                                                    italic: true,
-                                                    //textAlignment: TextAlignmentTypeValues.Center,
-                                                    textVerticalAlignment: ShapeBuilder.TextVerticalAlignment.MiddleCentered,
-                                                    textBoxFit: ShapeBuilder.TextBoxFit.ShrinkTextOnOverflow);
-            groupShape.Append(exerciseNameShape);
-
-            if(ExerciseVideoImagePart != null && ExerciseMediaDataPart != null)
-            {
-                var videoPicture = new Picture();
-                videoPicture.AppendNonVisualPictureProperties(id: _presentationBuilder.NewId, name: "ExerciseVideo", uri: $@"{{{Guid.NewGuid()}}}");
-
-                videoPicture.NonVisualPictureProperties.NonVisualDrawingProperties.Append(new HyperlinkOnClick { Id = "", Action = "ppaction://media" });
-                
-                var videoRId = this.SlidePart.DataPartReferenceRelationships.Where(x => x.GetType() == typeof(VideoReferenceRelationship) && x.DataPart == ExerciseMediaDataPart).First();
-                videoPicture.NonVisualPictureProperties.ApplicationNonVisualDrawingProperties.Append(new VideoFromFile() { Link = videoRId.Id });
-
-                var videoMediaRId = this.SlidePart.DataPartReferenceRelationships.Where(x => x.GetType() == typeof(MediaReferenceRelationship) && x.DataPart == ExerciseMediaDataPart).First();
-                P14.Media videoMedia = new P14.Media() { Embed = videoMediaRId.Id };
-                videoMedia.Append(new P14.MediaTrim() { End = "5000" });
-
-                videoMedia.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
-                videoPicture.NonVisualPictureProperties.ApplicationNonVisualDrawingProperties.Append(
-                    new ApplicationNonVisualDrawingPropertiesExtensionList(
-                        new ApplicationNonVisualDrawingPropertiesExtension(videoMedia)
-                        ));
-
-                videoPicture.AppendBlipFill(imageRId: SlidePart.GetIdOfPart(ExerciseVideoImagePart), isStrechShape: true);
-                videoPicture.AppendShapeProperties(posX: groupShape.GroupShapeProperties.TransformGroup.Offset.X,
-                                                     posY: groupShape.GroupShapeProperties.TransformGroup.Offset.Y.Value + exerciseNameShape.ShapeProperties.Transform2D.Extents.Cy.Value,
-                                                     width: groupShape.GroupShapeProperties.TransformGroup.Extents.Cx,
-                                                     height: VVAConstants.PixelToOpenXmlUnit(121));
-                groupShape.Append(videoPicture);
-
-                Timing timing = new Timing();
-
-            }
-
-            //var videoShape = new Shape();
-            //videoShape.AppendDefaultNonVisualShapeProperties(id: _presentationBuilder.NewId, name: "VideoRec");
-            //videoShape.AppendDefaultShapeProperties(posX: groupShape.GroupShapeProperties.TransformGroup.Offset.X,
-            //                                        posY: groupShape.GroupShapeProperties.TransformGroup.Offset.Y.Value + exerciseNameShape.ShapeProperties.Transform2D.Extents.Cy.Value,
-            //                                        width: groupShape.GroupShapeProperties.TransformGroup.Extents.Cx,
-            //                                        height: VVAConstants.PixelToOpenXmlUnit(121),
-            //                                        backgroundColor: "ED7D31");
-            //videoShape.AppendDefaultShapeStyle();
-            //videoShape.AppendDefaultTextBody(" ");
-            //groupShape.Append(videoShape);
-
-            var prescriptionShape = new Shape();
-            prescriptionShape.AppendDefaultNonVisualShapeProperties(id: _presentationBuilder.NewId, name: "ExercisePrescription");
-            prescriptionShape.AppendDefaultShapeProperties(posX: groupShape.GroupShapeProperties.TransformGroup.Offset.X,
-                                                           posY: groupShape.GroupShapeProperties.TransformGroup.Offset.Y.Value
-                                                                 + groupShape.GroupShapeProperties.TransformGroup.Extents.Cy.Value
-                                                                 - VVAConstants.PixelToOpenXmlUnit(64),
-                                                           width: groupShape.GroupShapeProperties.TransformGroup.Extents.Cx,
-                                                           height: VVAConstants.PixelToOpenXmlUnit(64));
-            prescriptionShape.AppendDefaultShapeStyle(fontColor: "ED7D31");
-            prescriptionShape.AppendDefaultTextBody(text: "300m JUST ONCE",
-                                                    fontSize: 2000,
-                                                    italic: true,
-                                                    ellipsis: true,
-                                                    //textAlignment: TextAlignmentTypeValues.Center,
-                                                    textVerticalAlignment: ShapeBuilder.TextVerticalAlignment.BottomCentered,
-                                                    fontColor: "ED7D31",
-                                                    textBoxFit: ShapeBuilder.TextBoxFit.ShrinkTextOnOverflow);
-            groupShape.Append(prescriptionShape);
-
-            return groupShape;
-        }
     }
 }

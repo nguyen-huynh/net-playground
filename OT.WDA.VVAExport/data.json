@@ -1,0 +1,44 @@
+[
+  {
+    "blockId": "3e8220f5-3a02-46ea-83f2-96e7741c936f",
+    "header": "Floor Block 1",
+    "duration": "6:35",
+    "exercises": [
+      {
+        "exerciseId": 8519,
+        "name": "High Row",
+        "videoUrl": "https://ot-videos-sit.s3.us-east-1.amazonaws.com/fitbook/exercises/2022/2/15/601_MB_Lateral_Lunge_to_a_Front_Press-00110.mp4?response-content-disposition=inline&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEOv%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaDmFwLXNvdXRoZWFzdC0xIkYwRAIgOLGAK8nCbNcMl1s%2FQdbO3V0JjxE4jpizaeRsCreA0lECID0ZlDodFzUJiDuqftks%2By0DPIK2ZsMTNWiTeogZmVeXKtYDCGQQAhoMNzY3OTM1ODIyODMxIgwJSVLIhZuWCTfqdyMqswOVSKDEJ1%2FN2Kp93EDdYQTSz3heJbOh%2B3OesD8xw01z5nNuaUT5SekE3klIMILHjdi%2FtOFAsD8p0U6Vl2wdFYf0FoCg1F48My4YDOMFz16crdwzvuNB58%2FCkRoARwVHF5INP9nBwl4F0MXexgx0qfc%2BOo84YNHJ6ovghmzFPUrh2wMB7lEUqFwvOCdD0mYjGlEM4ob9rWc2kQnWbGufLHx9gFf44jgLTB4TNk3EN54EAFOlc0spr90XhVWtCjT25Xfz%2BznzP2ENVgXgz%2FMwM5j84g4aPUGgRKyeSivhi8yX4InkZB%2FXiKgaEvJ5TL60CwNywuNGaT4CoCl%2Btwp%2FwKpHncCcMlk7EjMf%2BUUFOtHGzfbUXTg6CfA7SfuXofmCbGDYR%2FSiI5aLAHXXI899MamJx6uMRpJo8JT577zyI2FJrMrAfvj%2BnUchM96UXOJPVyrdrBNbVSMRtF3EiQFFWwX8dYxIHIhphxNsy1FbQGDHzgQQEGFwggF8KAKYZENSYd2bf0u6Qs4Cx0r7WguO8DIvCJccbpqSDNtWgNd5336k5x6nQK9uzjxB97C7ynlxnHwWPoIwjJq%2BkQY6hQI9IMjrnWuOXSf0eCARbP9siCJqXXhDusJUAfu1kfVpbuS8M4BYj90pG34%2FYQsbK3tyLyq2lfOcmUEz9onYolni0j7keCdp5yIj6PdQTHT3y5vPbp%2BFx791NlqA%2Byq4ygMKKXsKw1UAmNveYdW9ACyqWVom%2FdBlr%2FRWqVv%2FCpTqedYM3WOTiXcdvy2eZ%2Fbl%2BeGKnRq4MdpMZL3skJxLyclqz4HNkSaYjoZzBxinjya71VT3%2BqH7E3HiMkF9zbYyBZNjrn4jQHXJ0fRhX5YqIhgCz1o3w%2BFHyliCfCJpWA9QNaRB5zieWCndosUPp76R1MySjkWpg%2FOiX8FMYM3xbo9cxJ6i%2B6U%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20220314T190346Z&X-Amz-SignedHeaders=host&X-Amz-Expires=10800&X-Amz-Credential=ASIA3FTEKXPXWKIQX2LQ%2F20220314%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=574701a1d57604afb757b767032b21803c46feaaf860b5f80186dbb7b8dd7832",
+        "prescription": "10",
+        "thumnailUrl": "./video.png"
+      },
+      {
+        "exerciseId": 8520,
+        "name": "Alt. Chest Press",
+        "videoUrl": "https://ot-videos-sit.s3.us-east-1.amazonaws.com/fitbook/exercises/2022/2/15/733_BW_Bench_Static_Lunge-07192.mp4?response-content-disposition=inline&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEOv%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaDmFwLXNvdXRoZWFzdC0xIkYwRAIgOLGAK8nCbNcMl1s%2FQdbO3V0JjxE4jpizaeRsCreA0lECID0ZlDodFzUJiDuqftks%2By0DPIK2ZsMTNWiTeogZmVeXKtYDCGQQAhoMNzY3OTM1ODIyODMxIgwJSVLIhZuWCTfqdyMqswOVSKDEJ1%2FN2Kp93EDdYQTSz3heJbOh%2B3OesD8xw01z5nNuaUT5SekE3klIMILHjdi%2FtOFAsD8p0U6Vl2wdFYf0FoCg1F48My4YDOMFz16crdwzvuNB58%2FCkRoARwVHF5INP9nBwl4F0MXexgx0qfc%2BOo84YNHJ6ovghmzFPUrh2wMB7lEUqFwvOCdD0mYjGlEM4ob9rWc2kQnWbGufLHx9gFf44jgLTB4TNk3EN54EAFOlc0spr90XhVWtCjT25Xfz%2BznzP2ENVgXgz%2FMwM5j84g4aPUGgRKyeSivhi8yX4InkZB%2FXiKgaEvJ5TL60CwNywuNGaT4CoCl%2Btwp%2FwKpHncCcMlk7EjMf%2BUUFOtHGzfbUXTg6CfA7SfuXofmCbGDYR%2FSiI5aLAHXXI899MamJx6uMRpJo8JT577zyI2FJrMrAfvj%2BnUchM96UXOJPVyrdrBNbVSMRtF3EiQFFWwX8dYxIHIhphxNsy1FbQGDHzgQQEGFwggF8KAKYZENSYd2bf0u6Qs4Cx0r7WguO8DIvCJccbpqSDNtWgNd5336k5x6nQK9uzjxB97C7ynlxnHwWPoIwjJq%2BkQY6hQI9IMjrnWuOXSf0eCARbP9siCJqXXhDusJUAfu1kfVpbuS8M4BYj90pG34%2FYQsbK3tyLyq2lfOcmUEz9onYolni0j7keCdp5yIj6PdQTHT3y5vPbp%2BFx791NlqA%2Byq4ygMKKXsKw1UAmNveYdW9ACyqWVom%2FdBlr%2FRWqVv%2FCpTqedYM3WOTiXcdvy2eZ%2Fbl%2BeGKnRq4MdpMZL3skJxLyclqz4HNkSaYjoZzBxinjya71VT3%2BqH7E3HiMkF9zbYyBZNjrn4jQHXJ0fRhX5YqIhgCz1o3w%2BFHyliCfCJpWA9QNaRB5zieWCndosUPp76R1MySjkWpg%2FOiX8FMYM3xbo9cxJ6i%2B6U%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20220314T190409Z&X-Amz-SignedHeaders=host&X-Amz-Expires=10800&X-Amz-Credential=ASIA3FTEKXPXWKIQX2LQ%2F20220314%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=c529364a4304c242d3c1285bc61a4328557e20452f3988f91a9e999f2b5873cb",
+        "prescription": "10 Total",
+        "thumnailUrl": "./video.png"
+      }
+    ]
+  },
+  //{
+  //  "blockId": "3e8220f5-3a02-46ea-83f2-96e7741c936f",
+  //  "header": "Floor Block 2",
+  //  "duration": "5:50",
+  //  "exercises": [
+  //    {
+  //      "exerciseId": 8519,
+  //      "name": "High Row 3",
+  //      "videoUrl": "/fitbook/exercises/2022/2/15/mp4-file-01745.mp4?jwt=eyJraWQiOiJrWmFEK3h1bGk2XC9BWkxMTzAwa291Uk54Wkh1NzJVaGFobHU5dytGVmFTbz0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiI5OTk0NGZkOC03MjI5LTRjMzctOGRiOC05YWFmMjI2YWZiMmEiLCJjb2duaXRvOmdyb3VwcyI6WyJXREFGaXRuZXNzUHJvZ3JhbW1lciIsInVzLWVhc3QtMV9pcGNxMmV3OVNfTWljcm9zb2Z0Il0sImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC51cy1lYXN0LTEuYW1hem9uYXdzLmNvbVwvdXMtZWFzdC0xX2lwY3EyZXc5UyIsInZlcnNpb24iOjIsImNsaWVudF9pZCI6IjE0Nm5xOGZ0N2VhaG8xcWZiNzRiMnVlY3RyIiwib3JpZ2luX2p0aSI6ImNhMWM2NjVmLTZhYTktNDI0OC05MjFiLWNiNGQ4YjBmNTczZCIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiYXdzLmNvZ25pdG8uc2lnbmluLnVzZXIuYWRtaW4gb3BlbmlkIGVtYWlsIiwiYXV0aF90aW1lIjoxNjQ1MDc4MTIyLCJleHAiOjE2NDcyODAyODAsImlhdCI6MTY0NzI3NjY4MCwianRpIjoiMWZjZDk5YWMtMmQ0ZC00ZDQyLWE2MmQtMGViOTlhYWQ4ZTllIiwidXNlcm5hbWUiOiJNaWNyb3NvZnRfaHV5bmhuLnRtYUBvcmFuZ2V0aGVvcnkuY29tIn0.QX0KEu0xbZXk6XkeRLagQsCsofwvGFmR7L0fo_Y-siqKXNeHRLLmBnwu-_W4BqTWGQXbUy-tb4fw4FYSWnsylR9FQhbrCylUkCVo0rH2v5YxEdy2c7o8URGRsLFOCmnEcIDaPkOTkvwTYtcER4c3XnsSSdM8D0eQUoWVt8QzoG9EvpFunDr9ybpyx2So_DHpCjU7o_E9XbTiIo88zdmhUM__zzqHRW0w5sV1hJ7YEyDdF3XLfY6Ig2SsvTjKBy8pbb75qmiFPxRq-1aEC37iw0qh7ruvIJeATk50eOPt4BGy88MP7m4cIoWTlB7AVPTe5RFeNA8xPB6-hfkuDMVsPw",
+  //      "prescription": "10",
+  //      "thumnailUrl": "./video.png"
+  //    },
+  //    {
+  //      "exerciseId": 8521,
+  //      "name": "Alt. Chest Press 2",
+  //      "videoUrl": "/fitbook/exercises/2021/12/21/mp4-file-09230.mp4?jwt=eyJraWQiOiJrWmFEK3h1bGk2XC9BWkxMTzAwa291Uk54Wkh1NzJVaGFobHU5dytGVmFTbz0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiI5OTk0NGZkOC03MjI5LTRjMzctOGRiOC05YWFmMjI2YWZiMmEiLCJjb2duaXRvOmdyb3VwcyI6WyJXREFGaXRuZXNzUHJvZ3JhbW1lciIsInVzLWVhc3QtMV9pcGNxMmV3OVNfTWljcm9zb2Z0Il0sImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC51cy1lYXN0LTEuYW1hem9uYXdzLmNvbVwvdXMtZWFzdC0xX2lwY3EyZXc5UyIsInZlcnNpb24iOjIsImNsaWVudF9pZCI6IjE0Nm5xOGZ0N2VhaG8xcWZiNzRiMnVlY3RyIiwib3JpZ2luX2p0aSI6ImNhMWM2NjVmLTZhYTktNDI0OC05MjFiLWNiNGQ4YjBmNTczZCIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiYXdzLmNvZ25pdG8uc2lnbmluLnVzZXIuYWRtaW4gb3BlbmlkIGVtYWlsIiwiYXV0aF90aW1lIjoxNjQ1MDc4MTIyLCJleHAiOjE2NDcyODAyODAsImlhdCI6MTY0NzI3NjY4MCwianRpIjoiMWZjZDk5YWMtMmQ0ZC00ZDQyLWE2MmQtMGViOTlhYWQ4ZTllIiwidXNlcm5hbWUiOiJNaWNyb3NvZnRfaHV5bmhuLnRtYUBvcmFuZ2V0aGVvcnkuY29tIn0.QX0KEu0xbZXk6XkeRLagQsCsofwvGFmR7L0fo_Y-siqKXNeHRLLmBnwu-_W4BqTWGQXbUy-tb4fw4FYSWnsylR9FQhbrCylUkCVo0rH2v5YxEdy2c7o8URGRsLFOCmnEcIDaPkOTkvwTYtcER4c3XnsSSdM8D0eQUoWVt8QzoG9EvpFunDr9ybpyx2So_DHpCjU7o_E9XbTiIo88zdmhUM__zzqHRW0w5sV1hJ7YEyDdF3XLfY6Ig2SsvTjKBy8pbb75qmiFPxRq-1aEC37iw0qh7ruvIJeATk50eOPt4BGy88MP7m4cIoWTlB7AVPTe5RFeNA8xPB6-hfkuDMVsPw",
+  //      "prescription": "10 Total",
+  //      "thumnailUrl": "./video.png"
+  //    }
+  //  ]
+  //}
+]
