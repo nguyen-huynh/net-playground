@@ -3,9 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.32106.194
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OT.VVAExport", "OT.VVAExport\OT.VVAExport.csproj", "{B5494255-0437-4FA0-A70A-66DA012DE041}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OT.WDA.VVAExport", "OT.WDA.VVAExport\OT.WDA.VVAExport.csproj", "{21DF10D6-2DC8-4C4C-A340-AA831FD78A52}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OT.WDA.VVAExport", "OT.WDA.VVAExport\OT.WDA.VVAExport.csproj", "{21DF10D6-2DC8-4C4C-A340-AA831FD78A52}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,10 +11,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B5494255-0437-4FA0-A70A-66DA012DE041}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B5494255-0437-4FA0-A70A-66DA012DE041}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B5494255-0437-4FA0-A70A-66DA012DE041}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B5494255-0437-4FA0-A70A-66DA012DE041}.Release|Any CPU.Build.0 = Release|Any CPU
 		{21DF10D6-2DC8-4C4C-A340-AA831FD78A52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{21DF10D6-2DC8-4C4C-A340-AA831FD78A52}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{21DF10D6-2DC8-4C4C-A340-AA831FD78A52}.Release|Any CPU.ActiveCfg = Release|Any CPU
