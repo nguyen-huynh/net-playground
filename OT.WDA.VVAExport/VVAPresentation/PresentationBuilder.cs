@@ -24,6 +24,7 @@ namespace OT.WDA.VVAExport.VVAPresentation
         public List<IVVASlideBuilder> VVASlideBuilders { get; }
         public UInt32Value NewId { get; }
         public Dictionary<int, MediaDataPart> MapExerciseIdMedia { get;}
+        public Dictionary<int, ImagePart> MapExerciseIdThumnail { get; }
         public Dictionary<int, double> MapExerciseVideoDuration { get; }
         public string CreatePackage(IEnumerable<VVASlide> slides, string filePath = null);
         public string GenerateRelationshipId<T>() where T : class;
@@ -42,6 +43,7 @@ namespace OT.WDA.VVAExport.VVAPresentation
         public PresentationDocument PresentationDocument { get => _presentationDocument; private set { _presentationDocument = value; } }
         public List<IVVASlideBuilder> VVASlideBuilders { get; private set; } = new List<IVVASlideBuilder>();
         public Dictionary<int, MediaDataPart> MapExerciseIdMedia { get; private set; } = new Dictionary<int, MediaDataPart>();
+        public Dictionary<int, ImagePart> MapExerciseIdThumnail { get; private set; } = new Dictionary<int, ImagePart>();
         public Dictionary<int, double> MapExerciseVideoDuration { get; private set; } = new Dictionary<int, double>();
 
         public string CreatePackage(IEnumerable<VVASlide> slides, string filePath = null)
@@ -76,6 +78,7 @@ namespace OT.WDA.VVAExport.VVAPresentation
                 CleanRelationshipId();
                 VVASlideBuilders = new List<IVVASlideBuilder>();
                 MapExerciseIdMedia = new Dictionary<int, MediaDataPart>();
+                MapExerciseIdThumnail = new Dictionary<int, ImagePart>();
                 MapExerciseVideoDuration = new Dictionary<int, double>();
             }
             return filePath;

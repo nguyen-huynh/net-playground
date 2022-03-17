@@ -110,7 +110,7 @@
 
             var paragraph = new Paragraph();
 
-            paragraph.Append(new ParagraphProperties { Alignment = textAlignment });
+            paragraph.Append(new ParagraphProperties { Alignment = textAlignment,  FontAlignment = TextFontAlignmentValues.Center});
             if (!string.IsNullOrEmpty(text))
             {
                 //var solidFill = new SolidFill();
@@ -143,7 +143,7 @@
                     break;
 
                 case TextBoxFit.ShrinkTextOnOverflow:
-                    textBoxFitElement = new NormalAutoFit() { FontScale = 92500 };
+                    textBoxFitElement = new NormalAutoFit() { FontScale = 92500};
                     break;
 
                 default:

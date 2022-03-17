@@ -61,11 +61,35 @@
                 base.AddMultiMediaPart();
 
             // Video thumnail
-            ExerciseVideoThumnailImagePart = this.SlidePart.AddImagePart(ImagePartType.Png);
-            using (var stream = File.OpenRead("./video.png"))
-            {
-                ExerciseVideoThumnailImagePart.FeedData(stream);
-            }
+            _slide.Exercises.Where(x => !string.IsNullOrEmpty(x.ThumnailUrl))
+                .ToList()
+                .ForEach(exercise =>
+                {
+                    if (this._presentationBuilder.MapExerciseIdThumnail.ContainsKey(exercise.ExerciseId))
+                    {
+                        var imagePart = _presentationBuilder.MapExerciseIdThumnail[exercise.ExerciseId];
+                        if (!SlidePart.ImageParts.Contains(imagePart))
+                        {
+                            SlidePart.AddPart<ImagePart>(imagePart);
+                        }
+                    }
+                    else
+                    {
+                        var imagePart = SlidePart.AddImagePart(ImagePartType.Png);
+                        using (var stream = DownloadImage(exercise.ThumnailUrl))
+                        {
+                            imagePart.FeedData(stream);
+                        }
+
+                        SlidePart.ChangeIdOfPart(imagePart, $"thumnail{exercise.ExerciseId}");
+                        _presentationBuilder.MapExerciseIdThumnail[exercise.ExerciseId] = imagePart;
+                    }
+                });
+            //ExerciseVideoThumnailImagePart = this.SlidePart.AddImagePart(ImagePartType.Png);
+            //using (var stream = File.OpenRead("./video.png"))
+            //{
+            //    ExerciseVideoThumnailImagePart.FeedData(stream);
+            //}
 
             // Add VideoExercise
             _slide.Exercises.Where(x => !string.IsNullOrEmpty(x.VideoUrl))
@@ -176,10 +200,12 @@
                                                     textBoxFit: ShapeBuilder.TextBoxFit.ShrinkTextOnOverflow);
             groupShape.Append(exerciseNameShape);
 
-            if (_mapExerciseIdMedia.TryGetValue(exercise.ExerciseId, out var mediaDataPart) && this._presentationBuilder.MapExerciseVideoDuration.TryGetValue(exercise.ExerciseId, out var videoDuration))
+            if (_mapExerciseIdMedia.TryGetValue(exercise.ExerciseId, out var mediaDataPart) 
+                && this._presentationBuilder.MapExerciseVideoDuration.TryGetValue(exercise.ExerciseId, out var videoDuration)
+                && this._presentationBuilder.MapExerciseIdThumnail.TryGetValue(exercise.ExerciseId, out var thumnailImagePart))
             {
                 groupShape.Append(GenerateExerciseVideo(mediaDataPart,
-                                                        thumnailImagePart: ExerciseVideoThumnailImagePart,
+                                                        thumnailImagePart: thumnailImagePart,
                                                         videoDuration: videoDuration,
                                                         posX: groupShape.GroupShapeProperties.TransformGroup.Offset.X,
                                                         posY: groupShape.GroupShapeProperties.TransformGroup.Offset.Y.Value + exerciseNameShape.ShapeProperties.Transform2D.Extents.Cy.Value,
@@ -204,12 +230,13 @@
                                                     textVerticalAlignment: ShapeBuilder.TextVerticalAlignment.BottomCentered,
                                                     fontColor: "ED7D31",
                                                     textBoxFit: ShapeBuilder.TextBoxFit.ShrinkTextOnOverflow);
+
             groupShape.Append(prescriptionShape);
 
             return groupShape;
         }
 
-        public Picture GenerateExerciseVideo(MediaDataPart mediaDataPart, ImagePart thumnailImagePart,double videoDuration, long? posX = null, long? posY = null,
+        public Picture GenerateExerciseVideo(MediaDataPart mediaDataPart, ImagePart thumnailImagePart, double videoDuration, long? posX = null, long? posY = null,
             long? width = null, long? height = null)
         {
             if (mediaDataPart == null) throw new ArgumentNullException(nameof(mediaDataPart));
@@ -427,6 +454,17 @@
                 Console.WriteLine($"Download video by url: {videoUrl}");
 
                 return File.OpenRead(tempFilePath);
+            }
+        }
+
+        private Stream DownloadImage(string url)
+        {
+            if (string.IsNullOrEmpty(url))
+                throw new ArgumentNullException(nameof(url));
+
+            using (var wc = new WebClient())
+            {
+                return new MemoryStream(wc.DownloadData(url));
             }
         }
 
